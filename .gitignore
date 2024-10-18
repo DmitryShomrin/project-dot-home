@@ -1,0 +1,7 @@
+ansible/roles/geerlingguy*
+ansible/ansible-vault
+ansible/collections
+
+# Homepage
+bookmarks.yaml.j2
+services.yaml.j2
