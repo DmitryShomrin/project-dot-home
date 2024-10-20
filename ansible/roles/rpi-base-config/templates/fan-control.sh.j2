@@ -1,0 +1,27 @@
+#!/bin/bash
+
+hot_temp={{ rpi_base_config_fan_control_hot_temp }}
+cool_temp={{ rpi_base_config_fan_control_cool_temp }}
+dead_temp=80
+temp=$(vcgencmd measure_temp | egrep -o '[0-9]*\.[0-9]*')
+echo $temp
+temp0=${temp%.*}
+
+if [ $temp0 -ge $hot_temp ] 
+then
+    echo "CPU temp greater than $hot_temp: fan ON"
+    raspi-gpio set {{ rpi_base_config_fan_control_pin }} op
+    raspi-gpio set {{ rpi_base_config_fan_control_pin }} dh
+fi
+
+if [ $temp0 -lt $cool_temp ] 
+then
+    echo "CPU temp less than $cool_temp: fan OFF"
+    raspi-gpio set {{ rpi_base_config_fan_control_pin }} op
+    raspi-gpio set {{ rpi_base_config_fan_control_pin }} dl
+fi
+
+if [ $temp0 -ge $dead_temp ]
+then
+    sudo reboot
+fi

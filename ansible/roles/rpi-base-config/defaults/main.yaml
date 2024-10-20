@@ -1,0 +1,6 @@
+---
+rpi_base_config_home_directory: "{{ ansible_env.HOME }}"
+rpi_base_config_fan_control_on: false
+rpi_base_config_fan_control_hot_temp: 60
+rpi_base_config_fan_control_cool_temp: 55
+rpi_base_config_fan_control_pin: 17

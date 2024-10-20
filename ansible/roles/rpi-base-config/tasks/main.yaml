@@ -1,0 +1,27 @@
+---
+- name: Create directory for RPI scripts
+  ansible.builtin.file:
+    path: "{{rpi_base_config_home_directory}}/scripts"
+    state: directory
+    mode: '0755'
+
+- name: Template a fan-control script
+  ansible.builtin.template:
+    src: templates/fan-control.sh.j2
+    dest: "{{rpi_base_config_home_directory}}/scripts/fan-control.sh"
+    mode: '0755'
+  when: rpi_base_config_fan_control_on
+
+# Run script every minute
+# "crontab -l" to check cron tasks for current user
+- name: Create cron task for fan controlling
+  ansible.builtin.cron:
+    name: "fan control"
+    # Run script and redirect standard output and errors to /dev/null
+    job: "{{rpi_base_config_home_directory}}/scripts/fan-control.sh >/dev/null 2>&1"
+    minute: "*"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+  when: rpi_base_config_fan_control_on
