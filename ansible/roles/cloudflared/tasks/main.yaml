@@ -1,0 +1,43 @@
+---
+- name: Create system user
+  ansible.builtin.user:
+    name: cloudflared
+    system: true
+    state: present
+    shell: /usr/sbin/nologin
+
+- name: Install cloudflared
+  get_url:
+    url: "{{ cloudflared_releases_url }}"
+    dest: "{{ cloudflared_path }}"
+    owner: cloudflared
+    group: cloudflared
+    mode: 0755
+
+- name: Ensure configuration directory exists.
+  file:
+    path: "{{ cloudflared_config_path }}"
+    state: directory
+    owner: cloudflared
+    group: cloudflared
+
+- name: Template cloudflared configuration file
+  ansible.builtin.template:
+    src: templates/cloudflared.j2
+    dest: "{{ cloudflared_config_path }}/cloudflared"
+    owner: cloudflared
+    group: cloudflared
+    mode: 0755
+
+- name: Template cloudflared.service
+  ansible.builtin.template:
+    src: templates/cloudflared.service.j2
+    dest: "{{ cloudflared_service_path }}/cloudflared.service"
+    mode: 0644
+  notify: Restart cloudflared and daemon-reload
+
+- name: Enable cloudflared.service and start
+  ansible.builtin.service:
+    name: cloudflared
+    state: started
+    enabled: yes

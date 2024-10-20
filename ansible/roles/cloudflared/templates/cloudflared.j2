@@ -1,0 +1,2 @@
+# Commandline args for cloudflared, using Cloudflare DNS
+CLOUDFLARED_OPTS=--port 5053 --upstream https://{{ cloudflared_upstream_doh_server_1 }}/dns-query --upstream https://{{ cloudflared_upstream_doh_server_2 }}/dns-query

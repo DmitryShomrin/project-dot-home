@@ -1,0 +1,7 @@
+cloudflared_version: latest
+cloudflared_releases_url: https://github.com/cloudflare/cloudflared/releases/{{ cloudflared_version }}/download/cloudflared-linux-arm64
+cloudflared_path: /usr/local/bin/cloudflared
+cloudflared_config_path: /etc/cloudflared
+cloudflared_service_path: /lib/systemd/system
+cloudflared_upstream_doh_server_1: 1.1.1.1
+cloudflared_upstream_doh_server_2: 1.0.0.1
