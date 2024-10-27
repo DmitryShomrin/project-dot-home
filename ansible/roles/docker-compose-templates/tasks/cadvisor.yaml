@@ -1,0 +1,10 @@
+---
+- name: Define cadvisor docker compose file name
+  set_fact:
+    docker_compose_templates_cadvisor_file_name: "cadvisor.yaml"
+
+- name: Template a cadvisor docker-compose file
+  ansible.builtin.template:
+    src: templates/cadvisor.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_cadvisor_file_name }}"
+  notify: Start cadvisor

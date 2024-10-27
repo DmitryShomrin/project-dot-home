@@ -1,0 +1,49 @@
+---
+- name: Start cadvisor
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_cadvisor_file_name }} up -d"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Start pi-hole
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_pi_hole_file_name }} up -d"
+    chdir: "{{ docker_compose_templates_directory }}"
+  when: docker_compose_templates_start
+
+- name: Restart pi-hole
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_pi_hole_file_name }} up -d pihole --force-recreate"
+    chdir: "{{ docker_compose_templates_directory }}"
+  when: docker_compose_templates_start
+
+- name: Restart Prometheus
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_monitoring_file_name }} up -d --force-recreate prometheus"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Restart Grafana
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_monitoring_file_name }} up -d --force-recreate grafana"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Restart Homepage
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_homepage_file_name }} up -d --force-recreate"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Restart Traefik
+  ansible.builtin.command:
+    cmd: "{{ docker_compose_path }} -f {{ docker_compose_templates_traefik_file_name }} up -d --force-recreate"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Reload alertmanager config
+  ansible.builtin.uri:
+    url: https://alertmanager.s5n.dev/-/reload
+    method: POST
+  ignore_errors: true
+
+- name: Reload prometheus config
+  ansible.builtin.uri:
+    url: https://prometheus.s5n.dev/-/reload
+    method: POST
+  ignore_errors: true

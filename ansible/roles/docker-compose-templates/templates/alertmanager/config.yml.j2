@@ -1,0 +1,32 @@
+route:
+  receiver: 'telegram'
+  group_wait: 10s
+  group_interval: 10s
+
+  routes:
+  - receiver: 'telegram'
+    matchers:
+    - alertname = Watchdog
+    active_time_intervals:
+    - watchdog-time-interval
+
+receivers:
+  - name: 'telegram'
+    telegram_configs:
+    - send_resolved: true
+      bot_token: {{ docker_compose_templates_alertmanager_telegram_bot_token }}
+      chat_id: {{ docker_compose_templates_alertmanager_telegram_chat_id }}
+      message: {{ "'{{" }} template "telegram.message". {{ "}}'" }}
+      parse_mode: HTML
+
+templates:
+  - '/etc/alertmanager/telegram.tmpl'
+
+time_intervals:
+  - name: watchdog-time-interval
+    time_intervals:
+    - times:
+      - start_time: 10:00
+        end_time: 15:00
+      weekdays: ['sunday']
+      location: Europe/Stockholm

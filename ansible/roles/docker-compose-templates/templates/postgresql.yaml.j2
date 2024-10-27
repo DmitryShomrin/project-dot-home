@@ -1,0 +1,18 @@
+name: postgresql
+
+services:
+  postgresql:
+    image: postgres:{{ docker_compose_templates_postgresql_image_version }}
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: {{ docker_compose_templates_postgresql_password }}
+    networks:
+      - services
+    volumes:
+      - {{ docker_compose_templates_postgresql_data_dir }}:/var/lib/postgresql/data
+
+networks:
+  services:
+    name: services
+    external: true

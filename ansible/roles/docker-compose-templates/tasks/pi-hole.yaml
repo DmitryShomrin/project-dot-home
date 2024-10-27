@@ -1,0 +1,61 @@
+---
+- name: Create directory for pi-hole data
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_pi_hole_data_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Define pi-hole docker compose file name
+  set_fact:
+    docker_compose_templates_pi_hole_file_name: "pi-hole.yaml"
+
+- name: Template a pi-hole docker-compose file
+  ansible.builtin.template:
+    src: templates/pi-hole.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_pi_hole_file_name }}"
+  notify: Start pi-hole
+
+# Local DNS records
+- name: Create local DNS names
+  ansible.builtin.template:
+    src: templates/pi-hole/custom.list.j2
+    dest: "{{ docker_compose_templates_pi_hole_data_dir }}/etc-pihole/custom.list"
+    owner: root
+    group: root
+    mode: '0644'
+  when: docker_compose_templates_pi_hole_dns_local_names
+
+- name: Create custom CNAMEs
+  ansible.builtin.template:
+    src: templates/pi-hole/05-pihole-custom-cname.conf.j2
+    dest: "{{ docker_compose_templates_pi_hole_data_dir }}/etc-dnsmasq.d/05-pihole-custom-cname.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  when: docker_compose_templates_pi_hole_dns_custom_cnames
+  notify: Restart pi-hole
+
+# - name: Create local DNS names
+#   ansible.builtin.lineinfile:
+#     path: "{{ docker_compose_templates_pi_hole_data_dir }}/etc-pihole/custom.list"
+#     create: true
+#     line: "{{ item }}"
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   loop: "{{ docker_compose_templates_pi_hole_dns_local_names }}"
+#   when: docker_compose_templates_pi_hole_dns_local_names
+
+# - name: Create custom CNAMEs
+#   ansible.builtin.lineinfile:
+#     path: "{{ docker_compose_templates_pi_hole_data_dir }}/etc-dnsmasq.d/05-pihole-custom-cname.conf"
+#     create: true
+#     line: "{{ item }}"
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   loop: "{{ docker_compose_templates_pi_hole_dns_custom_cnames }}"
+#   when: docker_compose_templates_pi_hole_dns_custom_cnames
+
+- name: Flush handlers
+  meta: flush_handlers

@@ -1,0 +1,53 @@
+---
+
+- name: Initial directories
+  block:
+  - name: Create directory for docker compose configs
+    ansible.builtin.file:
+      path: "{{ docker_compose_templates_directory }}"
+      state: directory
+      mode: '0755'
+  
+  - name: Create directory for services config files
+    ansible.builtin.file:
+      path: "{{ docker_compose_services_config_base_path }}"
+      state: directory
+      mode: '0755'
+
+- name: Create docker network
+  ansible.builtin.shell: docker network create --driver bridge "{{ item }}" || /bin/true
+  loop:
+    - services
+    - proxy
+
+- name: Cadvisor
+  include_tasks: cadvisor.yaml
+  when: docker_compose_templates_cadvisor
+
+- name: Traefik
+  include_tasks: traefik.yaml
+  when: docker_compose_templates_traefik
+
+- name: Pi-hole
+  include_tasks: pi-hole.yaml
+  when: docker_compose_templates_pi_hole
+
+- name: Monitoring
+  include_tasks: monitoring.yaml
+  when: docker_compose_templates_monitoring
+
+- name: Homepage
+  include_tasks: homepage.yaml
+  when: docker_compose_templates_homepage
+
+- name: Postgresql
+  include_tasks: postgresql.yaml
+  when: docker_compose_templates_postgresql
+
+- name: Vaultwarden
+  include_tasks: vaultwarden.yaml
+  when: docker_compose_templates_vaultwarden
+
+- name: Immich
+  include_tasks: immich.yaml
+  when: docker_compose_templates_immich

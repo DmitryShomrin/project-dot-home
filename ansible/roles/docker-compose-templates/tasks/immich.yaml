@@ -1,0 +1,50 @@
+---
+- name: Create Immich database directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_immich_database_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Create Immich upload directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_immich_upload_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Create Immich model cache directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_immich_model_cache_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+# - name: Create Immich config directory
+#   ansible.builtin.file:
+#     path: "{{ docker_compose_templates_immich_config_dir }}"
+#     state: directory
+#     mode: '0755'
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
+
+- name: Template Immich environment file
+  ansible.builtin.template:
+    src: templates/immich/env.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_immich_config_file }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Define Immich docker compose file name
+  set_fact:
+    docker_compose_templates_immich_file_name: "immich.yaml"
+
+- name: Template Immich docker-compose file
+  ansible.builtin.template:
+    src: templates/immich.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_immich_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

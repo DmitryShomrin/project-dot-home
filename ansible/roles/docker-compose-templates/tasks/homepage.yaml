@@ -1,0 +1,36 @@
+---
+
+- name: Create homepage config directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_homepage_config_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Template homepage config file
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ docker_compose_templates_homepage_config_dir }}/{{ item.split('.') | first | basename }}.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_fileglob:
+    - "templates/homepage/*.j2"
+  # notify: Restart Homepage
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Define homepage docker compose file name
+  set_fact:
+    docker_compose_templates_homepage_file_name: "homepage.yaml"
+
+- name: Template homepage docker-compose file
+  ansible.builtin.template:
+    src: templates/homepage.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_homepage_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Restart Homepage

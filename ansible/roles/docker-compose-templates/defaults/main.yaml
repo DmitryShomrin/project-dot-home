@@ -1,0 +1,82 @@
+---
+docker_compose_templates_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_data_base_path: "/opt"
+docker_compose_services_data_raid_path: "/mnt/raid1"
+docker_compose_services_config_base_path: "{{ ansible_env.HOME }}/configs"
+docker_compose_templates_start: false
+# pi-hole
+docker_compose_templates_pi_hole: false
+docker_compose_templates_pi_hole_image_version: latest
+docker_compose_templates_pi_hole_web_password: ""
+docker_compose_templates_pi_hole_data_dir: "{{ docker_compose_services_data_base_path }}/pi-hole"
+docker_compose_templates_pi_hole_upstream_dns_servers: "1.1.1.1;1.0.0.1"
+docker_compose_templates_pi_hole_dns_local_names: [] # "<ip> name"
+docker_compose_templates_pi_hole_dns_custom_cnames: [] # "cname=< cname1 >,< cname2 >,< name >"
+# cloudflared
+docker_compose_templates_cloudflared: false
+docker_compose_templates_cloudflared_image_version: latest
+docker_compose_templates_cloudflared_upstream_dns_servers: "https://1.1.1.1/dns-query,https://1.0.0.1/dns-query"
+docker_compose_templates_cloudflared_dns_port: 5053
+docker_compose_templates_cloudflared_dns_address: 0.0.0.0
+
+# traefik
+docker_compose_templates_traefik: false
+docker_compose_templates_traefik_image_version: latest
+docker_compose_templates_traefik_certificates_dir: "/opt/nfs-server/certificate"
+docker_compose_templates_traefik_certificates_file: "acme.json"
+docker_compose_templates_traefik_config_dir: "{{ docker_compose_services_config_base_path }}/traefik"
+docker_compose_templates_traefik_dashboard_credentials: ""
+docker_compose_templates_traefik_cf_api_token: ""
+docker_compose_templates_traefik_cf_api_email: ""
+docker_compose_templates_traefik_read_timeout: "" # default 60s
+
+# monitoring
+docker_compose_templates_monitoring: false
+docker_compose_templates_prometheus_image_version: latest
+docker_compose_templates_prometheus_data_dir: "{{ docker_compose_services_data_base_path }}/prometheus"
+docker_compose_templates_prometheus_config_dir: "{{ docker_compose_services_config_base_path }}/prometheus"
+docker_compose_templates_prometheus_scrape_config_node_exporter_targets: ""
+docker_compose_templates_prometheus_scrape_config_smartctl_exporter_targets: "" # Example: ['192.168.1.253:9633']
+docker_compose_templates_prometheus_scrape_config_cadvisor_targets: ""
+docker_compose_templates_grafana_image_version: latest
+docker_compose_templates_grafana_data_dir: "{{ docker_compose_services_data_base_path }}/grafana"
+docker_compose_templates_grafana_config_dir: "{{ docker_compose_services_config_base_path }}/grafana/provisioning"
+docker_compose_templates_alertmanager: true
+docker_compose_templates_alertmanager_image_version: latest
+docker_compose_templates_alertmanager_config_dir: "{{ docker_compose_services_config_base_path }}/alertmanager"
+docker_compose_templates_alertmanager_telegram_bot_token: ""
+docker_compose_templates_alertmanager_telegram_chat_id: ""
+
+# homepage
+docker_compose_templates_homepage: false
+docker_compose_templates_homepage_image_version: latest
+docker_compose_templates_homepage_config_dir: "{{ docker_compose_services_config_base_path }}/homepage"
+
+# postgresql
+docker_compose_templates_postgresql: false
+docker_compose_templates_postgresql_image_version: latest
+docker_compose_templates_postgresql_data_dir: "{{ docker_compose_services_data_base_path }}/postgresql/data"
+docker_compose_templates_postgresql_password: "example"
+
+# vaultwarden
+docker_compose_templates_vaultwarden: false
+docker_compose_templates_vaultwarden_image_version: latest
+docker_compose_templates_vaultwarden_data_dir: "{{ docker_compose_services_data_raid_path }}/vaultwarden"
+docker_compose_templates_vaultwarden_database_host: ""
+docker_compose_templates_vaultwarden_database_user: ""
+docker_compose_templates_vaultwarden_database_password: ""
+docker_compose_templates_vaultwarden_database_name: ""
+docker_compose_templates_vaultwarden_admin_token: ""
+
+# cadvisor
+docker_compose_templates_cadvisor: false
+docker_compose_templates_cadvisor_image_version: latest
+
+# immich
+docker_compose_templates_immich: false
+docker_compose_templates_immich_version: release
+docker_compose_templates_immich_database_dir: "{{ docker_compose_services_data_base_path }}/postgresql-immich/data"
+docker_compose_templates_immich_database_password: ""
+docker_compose_templates_immich_model_cache_dir: "{{ docker_compose_services_data_base_path }}/immich-model-cache"
+docker_compose_templates_immich_upload_dir: "{{ docker_compose_services_data_raid_path }}/immich"
+docker_compose_templates_immich_config_file: ".env"

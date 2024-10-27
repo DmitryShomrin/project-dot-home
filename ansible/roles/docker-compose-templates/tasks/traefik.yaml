@@ -1,0 +1,50 @@
+---
+- name: Create traefik certificate directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_traefik_certificates_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: docker_compose_templates_traefik_certificates_dir
+
+- name: Create traefik config directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_traefik_config_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Check traefik certificate file
+  ansible.builtin.stat:
+    path: "{{ docker_compose_templates_traefik_config_dir }}/{{ docker_compose_templates_traefik_certificates_file }}"
+  register: certificate_file_result
+
+- name: Create traefik certificate file
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_traefik_config_dir }}/{{ docker_compose_templates_traefik_certificates_file }}"
+    state: touch
+    mode: '0600'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: not certificate_file_result.stat.exists
+
+- name: Template Traefik config file
+  ansible.builtin.template:
+    src: templates/traefik/traefik.yml.j2
+    dest: "{{ docker_compose_templates_traefik_config_dir }}/traefik.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Restart Traefik
+
+- name: Define Traefik docker compose file name
+  set_fact:
+    docker_compose_templates_traefik_file_name: "traefik.yaml"
+
+- name: Template Traefik docker-compose file
+  ansible.builtin.template:
+    src: templates/traefik.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_traefik_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

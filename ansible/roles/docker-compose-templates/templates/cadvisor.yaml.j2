@@ -1,0 +1,25 @@
+name: cadvisor
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor-arm64:{{ docker_compose_templates_cadvisor_image_version }}
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "9101:8080"
+    networks:
+      - services
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices: 
+      - "/dev/kmsg"
+    privileged: true
+
+networks:
+  services:
+    name: services
+    external: true

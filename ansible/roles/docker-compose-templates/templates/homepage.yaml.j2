@@ -1,0 +1,29 @@
+name: homepage
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:{{ docker_compose_templates_homepage_image_version }}
+    container_name: homepage
+    restart: unless-stopped
+    networks:
+      - services
+    volumes:
+      - {{ docker_compose_templates_homepage_config_dir }}:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+      - {{ docker_compose_services_config_base_path }}/homepage-images:/app/public/images # optional
+    environment:
+      PUID: {{ getent_passwd[ansible_user].1 }}
+      PGID: {{ getent_passwd[ansible_user].2 }}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.rule=Host(`start.s5n.dev`)"
+      - "traefik.http.routers.homepage.entrypoints=https"
+      - "traefik.http.routers.homepage.tls=true"
+      - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+      - "traefik.docker.network=services"
+
+networks:
+  services:
+    name: services
+    external: true

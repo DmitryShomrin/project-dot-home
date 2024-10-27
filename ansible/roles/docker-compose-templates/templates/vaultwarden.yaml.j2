@@ -1,0 +1,30 @@
+name: vaultwarden
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:{{ docker_compose_templates_vaultwarden_image_version }}
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "https://vaultwarden.s5n.dev"
+      SIGNUPS_ALLOWED: "true"
+      ADMIN_TOKEN: {{ docker_compose_templates_vaultwarden_admin_token }}
+      DATABASE_URL: postgresql://{{ docker_compose_templates_vaultwarden_database_user }}:{{ docker_compose_templates_vaultwarden_database_password }}@{{ docker_compose_templates_vaultwarden_database_host }}:5432/{{ docker_compose_templates_vaultwarden_database_name }}
+    user: {{ getent_passwd[ansible_user].1 }}:{{ getent_passwd[ansible_user].2 }}
+    networks:
+      - services
+    volumes:
+      - {{ docker_compose_templates_vaultwarden_data_dir }}:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.s5n.dev`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=https"
+      - "traefik.http.routers.vaultwarden.tls=true"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - "traefik.docker.network=services"
+
+networks:
+  services:
+    name: services
+    external: true

@@ -1,0 +1,24 @@
+---
+- name: Create Vaultwarden data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_vaultwarden_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Define Vaultwarden docker compose file name
+  set_fact:
+    docker_compose_templates_vaultwarden_file_name: "vaultwarden.yaml"
+
+- name: Template Vaultwarden docker-compose file
+  ansible.builtin.template:
+    src: templates/vaultwarden.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_vaultwarden_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

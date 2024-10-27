@@ -1,0 +1,19 @@
+---
+- name: Create Postgresql data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_postgresql_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Define Postgresql docker compose file name
+  set_fact:
+    docker_compose_templates_postgresql_file_name: "postgresql.yaml"
+
+- name: Template Postgresql docker-compose file
+  ansible.builtin.template:
+    src: templates/postgresql.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_postgresql_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

@@ -1,0 +1,11 @@
+groups:
+
+- name: test-alerts
+  rules:
+  
+  - alert: Watchdog
+    expr: vector(1)
+    labels:
+      severity: none
+    annotations:
+      description: "Monitoring System works fine"
