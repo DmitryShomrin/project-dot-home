@@ -3,6 +3,8 @@
   ansible.builtin.file:
     path: "{{rpi_base_config_home_directory}}/scripts"
     state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0755'
 
 - name: Template a fan-control script
