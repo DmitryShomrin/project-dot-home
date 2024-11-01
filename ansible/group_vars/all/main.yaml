@@ -9,6 +9,12 @@ docker_compose_version: "v2.27.1"
 
 # Node exporter
 node_exporter_version: 1.8.1
+node_exporter_enabled_collectors:
+  - systemd
+  - textfile:
+      directory: "{{ node_exporter_textfile_dir }}"
+  - filesystem:
+      ignored-mount-points: ^/(run)($|/.+)
 
 # Test variables
 test_name: all
