@@ -1,0 +1,38 @@
+name: minio
+
+services:
+  minio:
+    image: minio/minio:{{ docker_compose_templates_minio_image_version }}
+    container_name: minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: {{ docker_compose_templates_minio_root_user }}
+      MINIO_ROOT_PASSWORD: {{ docker_compose_templates_minio_root_password }}
+      MINIO_BROWSER_REDIRECT_URL: "https://minio.s5n.dev"
+      MINIO_SERVER_URL: "https://api-minio.s5n.dev"
+    user: {{ getent_passwd[ansible_user].1 }}:{{ getent_passwd[ansible_user].2 }}
+    networks:
+      - services
+    volumes:
+      - {{ docker_compose_templates_minio_data_dir }}:/data
+    command: server /data --console-address :9001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio-console.rule=Host(`minio.s5n.dev`)"
+      - "traefik.http.routers.minio-console.entrypoints=https"
+      - "traefik.http.routers.minio-console.tls=true"
+      - "traefik.http.routers.minio-console.tls.certresolver=cloudflare"
+      - "traefik.http.routers.minio-console.service=minio-console"
+      - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio-api.rule=Host(`api-minio.s5n.dev`)"
+      - "traefik.http.routers.minio-api.entrypoints=https"
+      - "traefik.http.routers.minio-api.tls=true"
+      - "traefik.http.routers.minio-api.tls.certresolver=cloudflare"
+      - "traefik.http.routers.minio-api.service=minio-api"
+      - "traefik.http.services.minio-api.loadbalancer.server.port=9000"
+      - "traefik.docker.network=services"
+
+networks:
+  services:
+    name: services
+    external: true

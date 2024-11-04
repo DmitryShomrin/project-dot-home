@@ -23,7 +23,7 @@ docker_compose_templates_pi_hole_dns_local_names: [
 ]
 docker_compose_templates_pi_hole_dns_custom_cnames: [
   "cname=start.s5n.dev,pihole.s5n.dev,traefik-{{ ansible_hostname }}.s5n.dev,{{ ansible_hostname }}.home",
-  "cname=immich.s5n.dev,vaultwarden.s5n.dev,alertmanager.s5n.dev,prometheus.s5n.dev,grafana.s5n.dev,traefik-rpi-storage-node.s5n.dev,rpi-storage-node.home"
+  "cname=api-minio.s5n.dev,minio.s5n.dev,immich.s5n.dev,vaultwarden.s5n.dev,alertmanager.s5n.dev,prometheus.s5n.dev,grafana.s5n.dev,traefik-rpi-storage-node.s5n.dev,rpi-storage-node.home"
 ] # "cname=< cname1 >,< cname2 >,< name >"
 # cloudflared
 docker_compose_templates_cloudflared: true

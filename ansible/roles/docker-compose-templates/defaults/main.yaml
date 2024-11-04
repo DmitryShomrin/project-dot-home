@@ -80,3 +80,11 @@ docker_compose_templates_immich_database_password: ""
 docker_compose_templates_immich_model_cache_dir: "{{ docker_compose_services_data_base_path }}/immich-model-cache"
 docker_compose_templates_immich_upload_dir: "{{ docker_compose_services_data_raid_path }}/immich"
 docker_compose_templates_immich_config_file: ".env"
+
+# minio
+
+docker_compose_templates_minio: false
+docker_compose_templates_minio_data_dir: "{{ docker_compose_services_data_base_path }}/minio"
+docker_compose_templates_minio_image_version: latest
+docker_compose_templates_minio_root_user: ""
+docker_compose_templates_minio_root_password: ""

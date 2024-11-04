@@ -51,3 +51,7 @@
 - name: Immich
   include_tasks: immich.yaml
   when: docker_compose_templates_immich
+
+- name: Minio
+  include_tasks: minio.yaml
+  when: docker_compose_templates_minio

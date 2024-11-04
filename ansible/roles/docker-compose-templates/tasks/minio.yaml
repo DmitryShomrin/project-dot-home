@@ -1,0 +1,19 @@
+---
+- name: Create Minio data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_templates_minio_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Define Minio docker compose file name
+  set_fact:
+    docker_compose_templates_minio_file_name: "minio.yaml"
+
+- name: Template Minio docker-compose file
+  ansible.builtin.template:
+    src: templates/minio.yaml.j2
+    dest: "{{ docker_compose_templates_directory }}/{{ docker_compose_templates_minio_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
