@@ -41,7 +41,7 @@ docker_compose_templates_grafana_admin_password: !vault |
           62343263323762376434656663323732363034356336353261633431363037636239313135343832
           3232616439323666380a323838396163633930396331343239626333616366316262393238313664
           6262
-docker_compose_templates_grafana_image_version: 11.1.3
+docker_compose_templates_grafana_image_version: 11.3.0
 docker_compose_templates_prometheus_image_version: v2.55.0
 docker_compose_templates_prometheus_scrape_config_node_exporter_targets: "['192.168.1.253:9100', '192.168.1.254:9100']"
 docker_compose_templates_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
@@ -99,7 +99,7 @@ docker_compose_templates_vaultwarden_admin_token: !vault |
 
 # Immich
 docker_compose_templates_immich: true
-docker_compose_templates_immich_version: v1.119.1
+docker_compose_templates_immich_version: v1.120.1
 docker_compose_templates_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64623838326333643537373963386266306230623231636130396630316132646538383533383435
