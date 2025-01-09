@@ -43,7 +43,7 @@ docker_compose_templates_grafana_admin_password: !vault |
           6262
 docker_compose_templates_grafana_image_version: 11.3.0
 docker_compose_templates_prometheus_image_version: v2.55.0
-docker_compose_templates_prometheus_scrape_config_node_exporter_targets: "['192.168.1.253:9100', '192.168.1.254:9100']"
+docker_compose_templates_prometheus_scrape_config_node_exporter_targets: "['192.168.1.253:9100', '192.168.1.254:9100', 192.168.1.250:9100]"
 docker_compose_templates_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
 docker_compose_templates_alertmanager_image_version: v0.27.0
 docker_compose_templates_alertmanager_telegram_bot_token: !vault |
@@ -78,7 +78,7 @@ docker_compose_templates_postgresql_password: !vault |
 
 # Vaultwarden
 docker_compose_templates_vaultwarden: true
-docker_compose_templates_vaultwarden_image_version: 1.32.3
+docker_compose_templates_vaultwarden_image_version: 1.32.6
 docker_compose_templates_vaultwarden_database_host: postgresql
 docker_compose_templates_vaultwarden_database_user: vaultwarden
 docker_compose_templates_vaultwarden_database_name: vaultwarden
@@ -99,7 +99,7 @@ docker_compose_templates_vaultwarden_admin_token: !vault |
 
 # Immich
 docker_compose_templates_immich: true
-docker_compose_templates_immich_version: v1.121.0
+docker_compose_templates_immich_version: v1.124.2
 docker_compose_templates_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64623838326333643537373963386266306230623231636130396630316132646538383533383435
