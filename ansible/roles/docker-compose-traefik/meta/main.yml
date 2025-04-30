@@ -1,0 +1,7 @@
+galaxy_info:
+  author: DmitryShomrin
+  description: Template traefik docker compose file and configuration
+  company: DmitryShomrin
+  galaxy_tags: []
+
+dependencies: []

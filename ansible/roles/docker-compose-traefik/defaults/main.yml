@@ -1,0 +1,19 @@
+---
+docker_compose_services_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_config_directory: "{{ ansible_env.HOME }}/configs"
+docker_compose_services_domain: "s5n.dev"
+docker_compose_networks:
+  - proxy
+  - services
+
+# traefik
+docker_compose_traefik_start: true # enable/disable auto start
+docker_compose_traefik_image_version: latest
+docker_compose_traefik_certificates_file: "acme.json"
+docker_compose_traefik_config_dir: "{{ docker_compose_services_config_directory }}/traefik"
+docker_compose_traefik_dashboard_credentials: ""
+docker_compose_traefik_cf_api_token: ""
+docker_compose_traefik_cf_api_email: ""
+docker_compose_traefik_read_timeout: "" # default 60s
+docker_compose_traefik_ca_server: "https://acme-staging-v02.api.letsencrypt.org/directory" # https://acme-v02.api.letsencrypt.org/directory # prod
+docker_compose_traefik_labels: []

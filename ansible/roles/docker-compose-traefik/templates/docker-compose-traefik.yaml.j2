@@ -1,0 +1,37 @@
+name: traefik
+
+services:
+  traefik:
+    image: traefik:{{ docker_compose_traefik_image_version }}
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+{% for item in docker_compose_networks %}
+      - {{ item }}
+{% endfor %}
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      CF_DNS_API_TOKEN: {{ docker_compose_traefik_cf_api_token }}
+      CF_API_EMAIL: {{ docker_compose_traefik_cf_api_email }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - {{ docker_compose_traefik_config_dir }}/traefik.yml:/traefik.yml:ro
+      - {{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}:/acme.json
+{% if docker_compose_traefik_labels %}
+    labels:
+{% endif %}
+{% for item in docker_compose_traefik_labels %}
+      - {{ item }}
+{% endfor %}
+
+networks:
+{% for item in docker_compose_networks %}
+  {{ item }}:
+    name: {{ item }}
+    external: true
+{% endfor %}

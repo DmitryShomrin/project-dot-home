@@ -1,0 +1,54 @@
+---
+
+- name: Create directories
+  include_tasks: create-init-directories.yaml
+
+- name: Create docker networks
+  include_tasks: create-docker-networks.yaml
+  loop: "{{ docker_compose_networks }}"
+
+- name: Create traefik config directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_traefik_config_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Check traefik certificate file
+  ansible.builtin.stat:
+    path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
+  register: traefik_certificate_file_result
+
+- name: Create traefik certificate file
+  ansible.builtin.file:
+    path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
+    state: touch
+    mode: '0600'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: not traefik_certificate_file_result.stat.exists
+
+- name: Template Traefik config file
+  ansible.builtin.template:
+    src: templates/config-traefik.yml.j2
+    dest: "{{ docker_compose_traefik_config_dir }}/traefik.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  register: traefik_template_config_task
+  notify: Start/Restart Traefik
+
+- name: Set Traefik docker compose file name
+  set_fact:
+    docker_compose_traefik_file_name: "traefik.yaml"
+
+- name: Template Traefik docker-compose file
+  ansible.builtin.template:
+    src: templates/docker-compose-traefik.yaml.j2
+    dest: "{{ docker_compose_services_directory }}/{{ docker_compose_traefik_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Start/Restart Traefik
+
+- name: Flush handlers
+  meta: flush_handlers
