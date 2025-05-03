@@ -1,0 +1,8 @@
+---
+
+- name: Start/Restart Pi-Hole
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ docker_compose_pihole_file_name }} up -d --force-recreate"
+    chdir: "{{ docker_compose_services_directory }}"
+  become: yes
+  when: docker_compose_pihole_start

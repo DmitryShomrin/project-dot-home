@@ -1,0 +1,58 @@
+---
+
+- name: Create directories
+  include_tasks: create-init-directories.yaml
+
+- name: Create docker networks
+  include_tasks: create-docker-networks.yaml
+  loop: "{{ docker_compose_networks }}"
+
+- name: Create pihole data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_pihole_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  become: yes
+
+- name: Set pihole docker compose file name
+  set_fact:
+    docker_compose_pihole_file_name: "pihole.yaml"
+
+- name: Template a pi-hole docker-compose file
+  ansible.builtin.template:
+    src: templates/docker-compose-pihole.yaml.j2
+    dest: "{{ docker_compose_services_directory }}/{{ docker_compose_pihole_file_name }}"
+  notify: Start/Restart Pi-Hole
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Stop & disable systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+  become: yes
+  when: ansible_facts['services']['systemd-resolved.service']['status'] | default('not-found') != 'not-found'
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Pi-Hole healthcheck
+  ansible.builtin.uri:
+    url: "https://{{ docker_compose_pihole_domain }}/admin/login"
+    follow_redirects: none
+    method: GET
+  register: _result
+  delegate_to: 127.0.0.1
+  until: _result.status == 200
+  retries: 24 # 2 mins
+  delay: 5 
+
+- name: API
+  include_tasks: api.yaml
+  args:
+    apply:
+      delegate_to: 127.0.0.1

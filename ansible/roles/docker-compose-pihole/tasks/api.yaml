@@ -1,0 +1,30 @@
+---
+- name: Pi-Hole authentication
+  ansible.builtin.uri:
+    url: https://{{ docker_compose_pihole_domain }}/api/auth
+    method: POST
+    return_content: true
+    body_format: json
+    body:
+      password: "{{ docker_compose_pihole_web_password }}"
+  register: auth
+
+- name: Create dns local records
+  ansible.builtin.uri:
+    url: https://{{ docker_compose_pihole_domain }}/api/config/dns/hosts/{{ item | urlencode }}
+    method: PUT
+    status_code: 201,400
+    headers:
+      X-FTL-SID: "{{ auth.json.session.sid }}"
+  loop: "{{ docker_compose_pihole_dns_local_names }}"
+
+- name: Create cname records
+  ansible.builtin.uri:
+    url: https://{{ docker_compose_pihole_domain }}/api/config/dns/cnameRecords/{{ item }}
+    method: PUT
+    status_code: 201,400
+    headers:
+      X-FTL-SID: "{{ auth.json.session.sid }}"
+  loop: "{{ docker_compose_pihole_dns_custom_cnames }}"
+  loop_control:
+    pause: 2

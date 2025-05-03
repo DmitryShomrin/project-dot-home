@@ -1,0 +1,27 @@
+---
+
+- name: Initial directories
+  block:
+  - name: Check docker compose files directory
+    ansible.builtin.stat:
+      path: "{{ docker_compose_services_directory }}"
+    register: traefik_docker_compose_services_directory_result
+
+  - name: Create directory for docker compose configs
+    ansible.builtin.file:
+      path: "{{ docker_compose_services_directory }}"
+      state: directory
+      mode: '0755'
+    when: not traefik_docker_compose_services_directory_result.stat.exists
+  
+  - name: Check services config files directory
+    ansible.builtin.stat:
+      path: "{{ docker_compose_services_config_directory }}"
+    register: traefik_docker_compose_services_config_directory_result
+
+  - name: Create directory for services config files
+    ansible.builtin.file:
+      path: "{{ docker_compose_services_config_directory }}"
+      state: directory
+      mode: '0755'
+    when: not traefik_docker_compose_services_config_directory_result.stat.exists

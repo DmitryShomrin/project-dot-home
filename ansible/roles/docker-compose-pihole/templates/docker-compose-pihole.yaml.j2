@@ -1,0 +1,56 @@
+name: pi-hole
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:{{ docker_compose_pihole_image_version }}
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      TZ: 'Europe/Stockholm'
+      FTLCONF_webserver_api_password: {{ docker_compose_pihole_web_password }}
+      FTLCONF_dns_upstreams: {{ docker_compose_pihole_upstream_dns_servers }}
+      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_dnssec: true
+    dns:
+      - "1.1.1.1"
+      - "1.0.0.1"
+    volumes:
+      - "{{ docker_compose_pihole_data_dir }}/etc-pihole:/etc/pihole"
+      - "{{ docker_compose_pihole_data_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
+    networks:
+      - services
+    restart: unless-stopped
+{% if docker_compose_pihole_cloudflared %}
+    depends_on:
+      cloudflared:
+        condition: service_started
+{% endif %}
+{% if docker_compose_pihole_labels %}
+    labels:
+{% endif %}
+{% for item in docker_compose_pihole_labels %}
+      - {{ item }}
+{% endfor %}
+
+
+{% if docker_compose_pihole_cloudflared %}
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:{{ docker_compose_pihole_cloudflared_image_version }}
+    environment:
+      TZ: 'Europe/Stockholm'
+      TUNNEL_DNS_UPSTREAM: {{ docker_compose_pihole_cloudflared_upstream_dns_servers }}
+      TUNNEL_DNS_PORT: {{ docker_compose_pihole_cloudflared_dns_port }}
+      TUNNEL_DNS_ADDRESS: {{ docker_compose_pihole_cloudflared_dns_address }}
+    command: proxy-dns
+    restart: unless-stopped
+    networks:
+      - services
+{% endif %}
+
+networks:
+  services:
+    name: services
+    external: true

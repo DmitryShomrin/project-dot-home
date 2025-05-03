@@ -1,0 +1,26 @@
+---
+docker_compose_services_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_config_directory: "{{ ansible_env.HOME }}/configs"
+docker_compose_services_domain: "s5n.dev"
+docker_compose_networks:
+  - proxy
+  - services
+
+# pihole
+docker_compose_pihole_start: true # enable/disable auto start
+docker_compose_pihole_image_version: latest
+docker_compose_pihole_domain: "pihole-v6-{{ ansible_hostname }}.{{ docker_compose_services_domain }}"
+docker_compose_pihole_config_dir: "{{ docker_compose_services_config_directory }}/pihole"
+docker_compose_pihole_web_password: ""
+docker_compose_pihole_upstream_dns_servers: "cloudflared#5053" # "1.1.1.1;1.0.0.1"
+docker_compose_pihole_data_dir: "/opt/pi-hole"
+docker_compose_pihole_dns_local_names: []
+docker_compose_pihole_dns_custom_cnames: []
+docker_compose_pihole_labels: []
+
+# cloudflared
+docker_compose_pihole_cloudflared: true
+docker_compose_pihole_cloudflared_image_version: latest
+docker_compose_pihole_cloudflared_upstream_dns_servers: "https://1.1.1.1/dns-query,https://1.0.0.1/dns-query"
+docker_compose_pihole_cloudflared_dns_port: 5053
+docker_compose_pihole_cloudflared_dns_address: 0.0.0.0
