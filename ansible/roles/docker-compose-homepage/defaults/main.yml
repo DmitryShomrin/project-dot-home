@@ -1,0 +1,13 @@
+---
+docker_compose_services_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_config_directory: "{{ ansible_env.HOME }}/configs"
+docker_compose_services_domain: "s5n.dev"
+docker_compose_networks:
+  - proxy
+  - services
+
+# homepage
+docker_compose_homepage_start: true
+docker_compose_homepage_image_version: latest
+docker_compose_homepage_config_dir: "{{ docker_compose_services_config_directory }}/homepage"
+docker_compose_homepage_labels: []

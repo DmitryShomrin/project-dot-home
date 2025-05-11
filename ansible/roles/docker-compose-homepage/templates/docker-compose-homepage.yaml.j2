@@ -1,0 +1,27 @@
+name: homepage
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:{{ docker_compose_homepage_image_version }}
+    container_name: homepage
+    restart: unless-stopped
+    networks:
+      - services
+    volumes:
+      - {{ docker_compose_homepage_config_dir }}:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: {{ docker_compose_homepage_domain }}
+      PUID: {{ getent_passwd[ansible_user].1 }}
+      PGID: {{ getent_passwd[ansible_user].2 }}
+{% if docker_compose_homepage_labels %}
+    labels:
+{% endif %}
+{% for item in docker_compose_homepage_labels %}
+      - {{ item }}
+{% endfor %}
+
+networks:
+  services:
+    name: services
+    external: true

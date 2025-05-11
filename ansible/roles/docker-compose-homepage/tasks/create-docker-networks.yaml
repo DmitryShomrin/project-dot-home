@@ -1,0 +1,10 @@
+---
+
+- name: Check if Docker network {{ item }} exists
+  shell: docker network inspect {{ item }}
+  register: docker_network_check
+  ignore_errors: true
+
+- name: Create Docker network {{ item }}
+  shell: docker network create {{ item }}
+  when: docker_network_check.rc != 0

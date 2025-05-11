@@ -1,0 +1,42 @@
+---
+
+- name: Create directories
+  include_tasks: create-init-directories.yaml
+
+- name: Create docker networks
+  include_tasks: create-docker-networks.yaml
+  loop: "{{ docker_compose_networks }}"
+
+- name: Create homepage config directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_homepage_config_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Template homepage config file
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ docker_compose_homepage_config_dir }}/{{ item.split('.') | first | basename }}.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_fileglob:
+    - "templates/homepage/*.j2"
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Set homepage docker compose file name
+  set_fact:
+    docker_compose_homepage_file_name: "homepage.yaml"
+
+- name: Template homepage docker-compose file
+  ansible.builtin.template:
+    src: templates/docker-compose-homepage.yaml.j2
+    dest: "{{ docker_compose_services_directory }}/{{ docker_compose_homepage_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Start/Restart Homepage
