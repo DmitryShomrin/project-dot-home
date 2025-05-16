@@ -1,0 +1,37 @@
+---
+docker_compose_services_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_config_directory: "{{ ansible_env.HOME }}/configs"
+docker_compose_services_data_directory: "/opt"
+docker_compose_services_domain: "s5n.dev"
+docker_compose_networks:
+  - proxy
+  - services
+
+docker_compose_prometheus_stack_start: true # enable/disable auto start
+
+# prometheus
+docker_compose_prometheus_image_version: latest
+docker_compose_prometheus_data_dir: "{{ docker_compose_services_data_directory }}/prometheus"
+docker_compose_prometheus_config_dir: "{{ docker_compose_services_config_directory }}/prometheus"
+docker_compose_prometheus_scrape_config_node_exporter_targets: ""
+docker_compose_prometheus_scrape_config_smartctl_exporter_targets: "" # Example: ['192.168.1.253:9633']
+docker_compose_prometheus_scrape_config_cadvisor_targets: ""
+docker_compose_prometheus_domain: "prometheus.{{ docker_compose_services_domain }}"
+docker_compose_prometheus_labels: []
+
+# grafana
+docker_compose_prometheus_grafana_image_version: latest
+docker_compose_prometheus_grafana_data_dir: "{{ docker_compose_services_data_directory }}/grafana"
+docker_compose_prometheus_grafana_config_dir: "{{ docker_compose_services_config_directory }}/grafana/provisioning"
+docker_compose_prometheus_grafana_admin_password: ""
+docker_compose_prometheus_grafana_domain: "grafana.{{ docker_compose_services_domain }}"
+docker_compose_prometheus_grafana_labels: []
+
+# alertmanager
+docker_compose_prometheus_alertmanager: true
+docker_compose_prometheus_alertmanager_image_version: latest
+docker_compose_prometheus_alertmanager_config_dir: "{{ docker_compose_services_config_directory }}/alertmanager"
+docker_compose_prometheus_alertmanager_telegram_bot_token: ""
+docker_compose_prometheus_alertmanager_telegram_chat_id: ""
+docker_compose_prometheus_alertmanager_domain: "alertmanager.{{ docker_compose_services_domain }}"
+docker_compose_prometheus_alertmanager_labels: []

@@ -1,7 +1,16 @@
+.idea
+
 ansible/roles/geerlingguy*
 ansible/ansible-vault
 ansible/collections
 
+credentials*
+
 # Homepage
 bookmarks.yaml.j2
 services.yaml.j2
+
+# Terraform
+.terraform
+.terraform.lock.hcl
+*.tfstate*

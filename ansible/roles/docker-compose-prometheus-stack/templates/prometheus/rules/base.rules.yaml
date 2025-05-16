@@ -1,0 +1,138 @@
+groups:
+
+- name: base-alerts
+  rules:
+
+# CPU
+
+  - alert: HostHighCpuLoad
+    expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host high CPU load (instance {{ $labels.instance }})
+      description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostCpuHighIowait
+    expr: (avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host CPU high iowait (instance {{ $labels.instance }})
+      description: "CPU iowait > 10%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+# Memory
+   
+  - alert: HostOutOfMemory
+    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of memory (instance {{ $labels.instance }})
+      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+# Disk
+
+  - alert: HostUnusualDiskReadRate
+    expr: (sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 3m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk read rate (instance {{ $labels.instance }})
+      description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostUnusualDiskWriteRate
+    expr: (sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk write rate (instance {{ $labels.instance }})
+      description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostUnusualDiskReadLatency
+    expr: (rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk read latency (instance {{ $labels.instance }})
+      description: "Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostUnusualDiskWriteLatency
+    expr: (rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk write latency (instance {{ $labels.instance }})
+      description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostOutOfDiskSpace
+    expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 20 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of disk space (instance {{ $labels.instance }})
+      description: "Disk is almost full (< 20% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostFilesystemDeviceError
+    expr: node_filesystem_device_error == 1
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: Host filesystem device error (instance {{ $labels.instance }})
+      description: "{{ $labels.instance }}: Device error with the {{ $labels.mountpoint }} filesystem\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostUnusualDiskIo
+    expr: (rate(node_disk_io_time_seconds_total[1m]) > 0.5) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 3m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk IO (instance {{ $labels.instance }})
+      description: "Time spent in IO is too high on {{ $labels.instance }}. Check storage for issues.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostRaidArrayGotInactive
+    expr: (node_md_state{state="inactive"} > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Host RAID array got inactive (instance {{ $labels.instance }})
+      description: "RAID array {{ $labels.device }} is in a degraded state due to one or more disk failures. The number of spare drives is insufficient to fix the issue automatically.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostRaidDiskFailure
+    expr: (node_md_disks{state="failed"} > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host RAID disk failure (instance {{ $labels.instance }})
+      description: "At least one device in RAID array on {{ $labels.instance }} failed. Array {{ $labels.md_device }} needs attention and possibly a disk swap\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+# Temperature
+
+  - alert: HostPhysicalComponentTooHot
+    expr: ((node_hwmon_temp_celsius * ignoring(label) group_left(instance, job, node, sensor) node_hwmon_sensor_label{label!="tctl"} > 75)) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Host physical component too hot (instance {{ $labels.instance }})
+      description: "Physical hardware component too hot\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
+  - alert: HostNodeOvertemperatureAlarm
+    expr: ((node_hwmon_temp_crit_alarm_celsius == 1) or (node_hwmon_temp_alarm == 1)) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Host node overtemperature alarm (instance {{ $labels.instance }})
+      description: "Physical node temperature alarm triggered\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

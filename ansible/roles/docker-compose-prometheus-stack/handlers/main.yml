@@ -1,0 +1,24 @@
+---
+
+- name: Start/Restart Prometheus stack
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ docker_compose_prometheus_monitoring_file_name }} up -d"
+    chdir: "{{ docker_compose_services_directory }}"
+  when: docker_compose_prometheus_stack_start
+
+- name: Restart Grafana
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ docker_compose_prometheus_monitoring_file_name }} up -d --force-recreate grafana"
+    chdir: "{{ docker_compose_templates_directory }}"
+
+- name: Reload alertmanager config
+  ansible.builtin.uri:
+    url: https://{{ docker_compose_prometheus_alertmanager_domain }}/-/reload
+    method: POST
+  ignore_errors: true
+
+- name: Reload prometheus config
+  ansible.builtin.uri:
+    url: https://{{ docker_compose_prometheus_domain }}/-/reload
+    method: POST
+  ignore_errors: true

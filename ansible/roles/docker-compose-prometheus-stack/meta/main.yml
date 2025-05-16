@@ -1,0 +1,7 @@
+galaxy_info:
+  author: DmitryShomrin
+  description: Template Prometheus stack docker compose file and configurations
+  company: DmitryShomrin
+  galaxy_tags: []
+
+dependencies: []
