@@ -25,3 +25,7 @@
       state: directory
       mode: '0755'
     when: not traefik_docker_compose_services_config_directory_result.stat.exists
+
+- name: Initial directories created - variable
+  set_fact:
+    docker_compose_services_directories_created: true
