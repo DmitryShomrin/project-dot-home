@@ -31,8 +31,9 @@ source "proxmox-iso" "ubuntu-server-noble" {
     # VM General Settings
     node                 = "${var.proxmox_node}"
     vm_id                = "999"
-    vm_name              = "ubuntu-server-noble-template"
+    vm_name              = "ubuntu-server-24.04.1-template"
     template_description = "Ubuntu Server Noble Image"
+    machine              = "q35"
 
     # VM OS Settings
     boot_iso {
@@ -94,6 +95,8 @@ source "proxmox-iso" "ubuntu-server-noble" {
     # Raise the timeout, when installation takes longer
     ssh_timeout             = "30m"
     ssh_pty                 = true
+
+    tags = "template;noble"
 }
 
 # Build Definition to create the VM Template

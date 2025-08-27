@@ -27,6 +27,6 @@ autoinstall:
         lock_passwd: false
         sudo: ALL=(ALL) NOPASSWD:ALL
         shell: /bin/bash
-        #passwd: # mkpasswd --method=SHA-512 --rounds=500000 <password>
+        passwd: # mkpasswd --method=SHA-512 --rounds=500000 <password>
         ssh_authorized_keys: 
           - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7MZq99TknueG/0yL8Dz4qBCuYui31ni7g+bqKijWoogGsI+YmceoukBrwRJlPWYpiBUNn4KXTFdo8bBuSzCQmQ08BV/pygBTPG5tUIOE7hpxmfaQwrM8ohfLk3wzQb8krnX9Wp0u3Ks4gVkf6kInZwRcbDD08kQoRAwn1iUSjIkZ6P9VvaXNw7aRTeTp1SdQ55tVyqMmXVpqp6aPYBgHucQVAoEvcK2SnfAPd5sWusHWZ+7phL6x1njvF92/KPP5iA5WOBOfMBegqd8AarGuII9vmJXWpAYZkRFHHqIDR2eT84z5vG6KYd8X2xIJ2fydCYEyTnpGxtG/Z7wCWnQGKzJkUMB7HJ+pBsiW0A64w6n6UYC1849isZ9FBIEgkHAWyRe8qSO8zgltS0mOXA5EZx/87XeuYt5lRbwm31SrAxIHl5RTIHU9DUPklAUtNXS8tKXV5TZPOTNx6Ro2WLkwzXQDg6qvkWVE0fH/kc+2D8fmwuVtCXFZ3vPTNb9Ps5xk=
