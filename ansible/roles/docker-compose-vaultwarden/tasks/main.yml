@@ -1,0 +1,38 @@
+---
+
+- name: Create directories
+  include_tasks: create-init-directories.yaml
+  when: docker_compose_services_directories_created is undefined or not docker_compose_services_directories_created
+
+- name: Create docker networks
+  include_tasks: create-docker-networks.yaml
+  loop: "{{ docker_compose_networks }}"
+  when: docker_network_created is undefined or not docker_network_created
+
+- name: Create Vaultwarden data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_vaultwarden_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Define Vaultwarden docker compose file name
+  set_fact:
+    docker_compose_vaultwarden_file_name: "vaultwarden.yaml"
+
+- name: Template Vaultwarden docker-compose file
+  ansible.builtin.template:
+    src: templates/docker-compose-vaultwarden.yaml.j2
+    dest: "{{ docker_compose_services_directory }}/{{ docker_compose_vaultwarden_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Start/Restart Vaultwarden
+
+- name: Flush handlers
+  meta: flush_handlers

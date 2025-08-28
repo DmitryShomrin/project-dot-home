@@ -1,0 +1,7 @@
+---
+
+- name: Start/Restart Vaultwarden
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ docker_compose_vaultwarden_file_name }} up -d --force-recreate"
+    chdir: "{{ docker_compose_services_directory }}"
+  when: docker_compose_vaultwarden_start
