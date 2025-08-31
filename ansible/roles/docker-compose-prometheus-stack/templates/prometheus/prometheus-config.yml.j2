@@ -24,7 +24,7 @@ scrape_configs:
 {% endif %}
 {% if docker_compose_prometheus_scrape_config_smartctl_exporter_targets %}
   - job_name: smartctl-exporter
-    scrape_interval: 15s
+    scrape_interval: 5m
     static_configs:
        - targets: {{ docker_compose_prometheus_scrape_config_smartctl_exporter_targets }}
 {% endif %}
