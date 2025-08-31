@@ -88,3 +88,19 @@ docker_compose_templates_minio_data_dir: "{{ docker_compose_services_data_base_p
 docker_compose_templates_minio_image_version: latest
 docker_compose_templates_minio_root_user: ""
 docker_compose_templates_minio_root_password: ""
+
+# paperless-ngx
+
+docker_compose_templates_paperless: false
+docker_compose_templates_paperless_image_version: latest
+docker_compose_templates_paperless_broker_image: docker.io/library/redis:7
+docker_compose_templates_paperless_gotenberg_image_version: latest
+docker_compose_templates_paperless_tika_image_version: latest
+docker_compose_templates_paperless_consume_dir: "{{ docker_compose_services_data_base_path }}/paperless/consume"
+docker_compose_templates_paperless_data_dir: "{{ docker_compose_services_data_base_path }}/paperless/data"
+docker_compose_templates_paperless_media_dir: "{{ docker_compose_services_data_raid_path }}/paperless/media"
+docker_compose_templates_paperless_export_dir: "{{ docker_compose_services_data_raid_path }}/paperless/export"
+docker_compose_templates_paperless_redis_data_dir: "{{ docker_compose_services_data_base_path }}/paperless/redis-data"
+docker_compose_templates_paperless_admin_user: ""
+docker_compose_templates_paperless_admin_password: ""
+docker_compose_templates_paperless_database_password: ""

@@ -9,10 +9,10 @@ services:
       - "53:53/udp"
     environment:
       TZ: 'Europe/Stockholm'
-      WEBPASSWORD: {{ docker_compose_templates_pi_hole_web_password }}
-      PIHOLE_DNS_: {{ docker_compose_templates_pi_hole_upstream_dns_servers }}
+      FTLCONF_webserver_api_password: {{ docker_compose_templates_pi_hole_web_password }}
+      FTLCONF_dns_upstreams: {{ docker_compose_templates_pi_hole_upstream_dns_servers }}
     #  FTLCONF_LOCAL_IPV4: {{ ansible_default_ipv4.address }}
-      DNSSEC: true
+      FTLCONF_dns_dnssec: true
     volumes:
       - "{{ docker_compose_templates_pi_hole_data_dir }}/etc-pihole:/etc/pihole"
       - "{{ docker_compose_templates_pi_hole_data_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"

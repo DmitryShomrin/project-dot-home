@@ -55,3 +55,7 @@
 - name: Minio
   include_tasks: minio.yaml
   when: docker_compose_templates_minio
+
+- name: Paperless
+  include_tasks: paperless.yaml
+  when: docker_compose_templates_paperless
