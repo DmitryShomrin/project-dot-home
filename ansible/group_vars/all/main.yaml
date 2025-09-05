@@ -2,19 +2,22 @@
 docker_users:
   - admin
 # Docker Compose Plugin options.
-docker_install_compose_plugin: false
+docker_install_compose_plugin: true
 # Docker Compose options.
-docker_install_compose: true
-docker_compose_version: "v2.27.1"
+docker_install_compose: false
+# docker_compose_version: "v2.27.1"
 
 # Node exporter
-node_exporter_version: 1.8.1
+# node_exporter_version: 1.8.1
 node_exporter_enabled_collectors:
   - systemd
   - textfile:
       directory: "{{ node_exporter_textfile_dir }}"
   - filesystem:
       ignored-mount-points: ^/(run)($|/.+)
+
+# Traefik
+docker_compose_traefik_ca_server: https://acme-v02.api.letsencrypt.org/directory
 
 # Test variables
 test_name: all

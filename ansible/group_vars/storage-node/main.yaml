@@ -3,50 +3,57 @@ docker_daemon_options:
   log-driver: local
 
 # Traefik
-docker_compose_templates_traefik: true
-docker_compose_templates_traefik_image_version: v3.1.4
-docker_compose_templates_traefik_dashboard_credentials: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          61316234326464616364393838353164366237366463616433663633633966666664353034646266
-          6233656538306434323832363832376334373063646334370a366330653136386434616435393963
-          37646231633764303433616238303637626664363461323830396363353939353834363434353765
-          6666653661346134350a666533316633366362626134653161326363643265633663313932343238
-          38623630326635323361666264313865343763633165356136366363643936353233633335653134
-          65376437326664616264633666393339383434343062343564333438316536396536336264383239
-          61343261333731333065383733636434386330633336353439366635336334393736633432333537
-          62383365313035613937
-docker_compose_templates_traefik_cf_api_token: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          62646338396537393636333963653131643065636334656465663536653964343863666234643762
-          6139396466323763616632393962643230363737373634310a343962353663393637316330396136
-          36346236373838363936353031633032363238613634663264313433633435386230326239666661
-          6430346463343437660a636337323962303738346162373536623931313463366263366138356263
-          37346365643838323430653561333061383631323836616331366630393031333264633230336534
-          3935643766303162333634363861613464396430646466616638
-docker_compose_templates_traefik_cf_api_email: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          35376536653330646262353133626432366666366539373435623630353438623137623937393838
-          3430343637636664363564666564386438333464656531300a313966643037306635303832346336
-          62626534323031303564363832616339623662376137313763393439373965626238343439613963
-          3061386534303733650a373236383238303865613830623435313136616131383739303532623137
-          38646463393130366335386638306466306565663235643530376639363432646230
-docker_compose_templates_traefik_read_timeout: "0s" # disable read timeout
+docker_compose_traefik_image_version: v3.3.6
+docker_compose_traefik_read_timeout: "0s" # disable read timeout
+docker_compose_traefik_labels:
+  - "traefik.enable=true" # You can tell Traefik to consider (or not) the container by setting traefik.enable to true or false
+  - "traefik.http.routers.traefik.entrypoints=http"
+  - "traefik.http.routers.traefik.rule=Host(`traefik-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.middlewares.traefik-auth.basicauth.users={{ docker_compose_traefik_dashboard_credentials }}"
+  - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+  - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+  - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+  - "traefik.http.routers.traefik-secure.entrypoints=https"
+  - "traefik.http.routers.traefik-secure.rule=Host(`traefik-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+  - "traefik.http.routers.traefik-secure.tls=true"
+  - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+  - "traefik.http.routers.traefik-secure.service=api@internal"
 
 # Monitoring
-docker_compose_templates_monitoring: true
-docker_compose_templates_grafana_admin_password: !vault |
+# grafana
+docker_compose_prometheus_grafana_image_version: 11.6.5
+docker_compose_prometheus_grafana_admin_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           63313630353062333837353561303764316265623131613461336439383466636239666639313232
           3736653437373530616564336130363939646166376666390a633033303763613033303134323366
           62343263323762376434656663323732363034356336353261633431363037636239313135343832
           3232616439323666380a323838396163633930396331343239626333616366316262393238313664
           6262
-docker_compose_templates_grafana_image_version: 11.3.0
-docker_compose_templates_prometheus_image_version: v2.55.0
-docker_compose_templates_prometheus_scrape_config_node_exporter_targets: "['192.168.1.253:9100', '192.168.1.254:9100', 192.168.1.250:9100]"
-docker_compose_templates_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
-docker_compose_templates_alertmanager_image_version: v0.27.0
-docker_compose_templates_alertmanager_telegram_bot_token: !vault |
+docker_compose_prometheus_grafana_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.grafana.rule=Host(`{{ docker_compose_prometheus_grafana_domain }}`)"
+  - "traefik.http.routers.grafana.entrypoints=https"
+  - "traefik.http.routers.grafana.tls=true"
+  - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
+  - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+  - "traefik.docker.network=services"
+# prometheus
+docker_compose_prometheus_image_version: v3.5.0
+docker_compose_prometheus_scrape_config_node_exporter_targets: "[192.168.1.254:9100, 192.168.1.253:9100, 192.168.1.252:9100, 192.168.1.250:9100, 192.168.1.249:9100]"
+docker_compose_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
+docker_compose_prometheus_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.prometheus.rule=Host(`{{ docker_compose_prometheus_domain }}`)"
+  - "traefik.http.routers.prometheus.entrypoints=https"
+  - "traefik.http.routers.prometheus.tls=true"
+  - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
+  - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+  - "traefik.docker.network=services"
+# alertmanager
+docker_compose_prometheus_alertmanager: true
+docker_compose_prometheus_alertmanager_image_version: v0.28.1
+docker_compose_prometheus_alertmanager_telegram_bot_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           35316334633030303864666331623739363463666135326233666331663462346664633438386637
           3866346665653464383838353736386236616534616130390a383939346430643562393936663465
@@ -54,13 +61,21 @@ docker_compose_templates_alertmanager_telegram_bot_token: !vault |
           3664666135323464350a333539303231313637366131343635613630653938633733653361663362
           64623230303065613933366133346638626465336366666533633638653065356265626435346362
           3833613066633338393439623231313235353433373064613532
-docker_compose_templates_alertmanager_telegram_chat_id: !vault |
+docker_compose_prometheus_alertmanager_telegram_chat_id: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65363532306438356130663862353035613037616363353736303665373865346264383030643539
           3632333937643836313636336362366661313032626466660a656131616162636261393734376131
           37396133653765353435326666623965623339666638386261633635663037633936616261633162
           3435623561326538650a316437393634653233336232666136393738623634366634353932396466
           3163
+docker_compose_prometheus_alertmanager_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.alertmanager.rule=Host(`{{ docker_compose_prometheus_alertmanager_domain }}`)"
+  - "traefik.http.routers.alertmanager.entrypoints=https"
+  - "traefik.http.routers.alertmanager.tls=true"
+  - "traefik.http.routers.alertmanager.tls.certresolver=cloudflare"
+  - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+  - "traefik.docker.network=services"
 
 # NFS server
 nfs_exports: ["/opt/nfs-server/volume *(rw,sync,no_subtree_check)"]
@@ -76,30 +91,52 @@ docker_compose_templates_postgresql_password: !vault |
           6133653236373862620a366165343661386163353366346366633336343437653231303131393332
           3137
 
+# Postgresus
+docker_compose_postgresus_start: false
+docker_compose_postgresus_image_version: latest
+docker_compose_postgresus_data_dir: "/opt/postgresus"
+docker_compose_postgresus_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.postgresus.rule=Host(`postgresus-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.routers.postgresus.entrypoints=https"
+  - "traefik.http.routers.postgresus.tls=true"
+  - "traefik.http.routers.postgresus.tls.certresolver=cloudflare"
+  - "traefik.http.services.postgresus.loadbalancer.server.port=4005"
+  - "traefik.docker.network=services"
+
 # Vaultwarden
-docker_compose_templates_vaultwarden: true
-docker_compose_templates_vaultwarden_image_version: 1.32.6
-docker_compose_templates_vaultwarden_database_host: postgresql
-docker_compose_templates_vaultwarden_database_user: vaultwarden
-docker_compose_templates_vaultwarden_database_name: vaultwarden
-docker_compose_templates_vaultwarden_database_password: !vault |
+docker_compose_vaultwarden_start: true
+docker_compose_vaultwarden_image_version: 1.34.3
+docker_compose_vaultwarden_data_dir: "/mnt/raid1/vaultwarden"
+docker_compose_vaultwarden_database_host: postgresql
+docker_compose_vaultwarden_database_user: vaultwarden
+docker_compose_vaultwarden_database_name: vaultwarden
+docker_compose_vaultwarden_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           65616264373938343961313533646636646532323263306664656531386461343038343362656537
           6431376434646139663863643562313739663866313538330a636439303063383263396464623634
           35396435653832333364353933393737393936393563353762323933653961656664383964396565
           3366316238366631320a306332353664386663336164326534663737623065306635326262663735
           3337
-docker_compose_templates_vaultwarden_admin_token: !vault |
+docker_compose_vaultwarden_admin_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           38303763656361623032636533663835613939363831626237316236653036613539343034366238
           3361663239306562643537303238633063326332643166380a316437383439373332306463616163
           30383432376362626333383365366135623230656232393639366165666530643936613734636335
           3631336366386230300a316532356534313131343563656261616636636665643131306466366536
           3937
+docker_compose_vaultwarden_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.routers.vaultwarden.entrypoints=https"
+  - "traefik.http.routers.vaultwarden.tls=true"
+  - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
+  - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+  - "traefik.docker.network=services"
 
 # Immich
 docker_compose_templates_immich: true
-docker_compose_templates_immich_version: v1.124.2
+docker_compose_templates_immich_version: v1.138.0
 docker_compose_templates_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64623838326333643537373963386266306230623231636130396630316132646538383533383435
@@ -110,7 +147,7 @@ docker_compose_templates_immich_database_password: !vault |
 
 # Minio
 docker_compose_templates_minio: true
-docker_compose_templates_minio_image_version: RELEASE.2024-10-29T16-01-48Z
+docker_compose_templates_minio_image_version: RELEASE.2025-04-22T22-12-26Z
 docker_compose_templates_minio_root_user: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           30376661306630623363353630626533346463376435643630363530323737626664366464626435
@@ -125,6 +162,35 @@ docker_compose_templates_minio_root_password: !vault |
           65313332313032363733356437393161323635653830323962343534333936613936396238363234
           3838666339623939320a373563326664343862626536343932323936663134616635636362353035
           3665
+
+# paperless-ngx
+
+docker_compose_templates_paperless: true
+docker_compose_templates_paperless_image_version: 2.14.7
+docker_compose_templates_paperless_broker_image: docker.io/library/redis:7
+docker_compose_templates_paperless_gotenberg_image_version: 8.17.3
+docker_compose_templates_paperless_tika_image_version: 3.1.0.0
+docker_compose_templates_paperless_admin_user: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66376662383165376333313561373161663530626666326465653530663638646439306231373761
+          3661613237656664396534626163653335636665613136640a646639313437393838663862353563
+          32646532613535613334303766353663343166333264613938383864623563643034356132636166
+          3034386462336233310a396462663061633762386564323434326364306264363037323636623062
+          3165
+docker_compose_templates_paperless_admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65643134323466353336633037353861663464396166643539333130663263326464323665313164
+          3137313963373137343162326461643664323536346465380a376631646464333562613763366338
+          63356238366335633439333834356338333138623665626137313130383130323565393638663439
+          3730353466333630370a643837383235646537643536343736383763666136346436383434336564
+          3562
+docker_compose_templates_paperless_database_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          61666365356235336538646164396362616534636166663936333635346162323337343865626634
+          3134383137316332373034333666336431343536346233630a626263366332363336373738316438
+          34303230336530336133633935353835346434373066386630313635623130323837383162666561
+          6463353930613337320a373164613137646435646662626139353864313563303630306563353132
+          6638
 
 # Test variables
 test_name: storage-node

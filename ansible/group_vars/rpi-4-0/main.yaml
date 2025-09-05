@@ -1,0 +1,80 @@
+# Enable fan control script
+rpi_base_config_fan_control_on: true
+
+# Docker configuration
+docker_daemon_options:
+  log-driver: local
+
+docker_compose_templates_start: true
+# pi-hole
+docker_compose_pihole_image_version: 2025.08.0
+docker_compose_pihole_cloudflared_image_version: 2025.8.0
+docker_compose_pihole_web_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63313630353062333837353561303764316265623131613461336439383466636239666639313232
+          3736653437373530616564336130363939646166376666390a633033303763613033303134323366
+          62343263323762376434656663323732363034356336353261633431363037636239313135343832
+          3232616439323666380a323838396163633930396331343239626333616366316262393238313664
+          6262
+docker_compose_pihole_domain: "pihole.s5n.dev"
+docker_compose_pihole_labels:
+  - "traefik.enable=true" # You can tell pihole to consider (or not) the container by setting pihole.enable to true or false
+  - "traefik.http.routers.pihole.rule=Host(`{{ docker_compose_pihole_domain }}`)"
+  - "traefik.http.routers.pihole.entrypoints=https"
+  - "traefik.http.routers.pihole.tls=true"
+  - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
+  - "traefik.http.services.pihole.loadbalancer.server.port=80"
+  - "traefik.docker.network=services"
+docker_compose_pihole_dns_local_names:
+  - "192.168.1.254 rpi4-0.home"
+  - "192.168.1.253 rpi-storage-node.home"
+  - "192.168.1.245 test-vm-0.home"
+docker_compose_pihole_dns_custom_cnames:
+  - "start.s5n.dev,rpi4-0.home"
+  - "pihole.s5n.dev,rpi4-0.home"
+  - "traefik-rpi4-0.s5n.dev,rpi4-0.home"
+  - "paperless.s5n.dev,rpi-storage-node.home"
+  - "api-minio.s5n.dev,rpi-storage-node.home"
+  - "minio.s5n.dev,rpi-storage-node.home"
+  - "immich.s5n.dev,rpi-storage-node.home"
+  - "vaultwarden.s5n.dev,rpi-storage-node.home"
+  - "alertmanager.s5n.dev,rpi-storage-node.home"
+  - "prometheus.s5n.dev,rpi-storage-node.home"
+  - "grafana.s5n.dev,rpi-storage-node.home"
+  - "traefik-rpi-storage-node.s5n.dev,rpi-storage-node.home"
+  - "traefik-test-0.s5n.dev,test-vm-0.home"
+  - "pihole-v6-test-0.s5n.dev,test-vm-0.home"
+
+# Traefik
+docker_compose_traefik_image_version: v3.3.6
+docker_compose_traefik_ca_server: "https://acme-v02.api.letsencrypt.org/directory"
+docker_compose_traefik_labels:
+  - "traefik.enable=true" # You can tell Traefik to consider (or not) the container by setting traefik.enable to true or false
+  - "traefik.http.routers.traefik.entrypoints=http"
+  - "traefik.http.routers.traefik.rule=Host(`traefik-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.middlewares.traefik-auth.basicauth.users={{ docker_compose_traefik_dashboard_credentials }}"
+  - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+  - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+  - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+  - "traefik.http.routers.traefik-secure.entrypoints=https"
+  - "traefik.http.routers.traefik-secure.rule=Host(`traefik-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+  - "traefik.http.routers.traefik-secure.tls=true"
+  - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+  - "traefik.http.routers.traefik-secure.service=api@internal"
+
+# homepage
+docker_compose_homepage_start: true
+docker_compose_homepage_image_version: v1.4.5
+docker_compose_homepage_domain: "start.s5n.dev"
+docker_compose_homepage_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.homepage.rule=Host(`{{ docker_compose_homepage_domain }}`)"
+  - "traefik.http.routers.homepage.entrypoints=https"
+  - "traefik.http.routers.homepage.tls=true"
+  - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+  - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+  - "traefik.docker.network=services"
+
+# Test variables
+test_name: rpi4-0
