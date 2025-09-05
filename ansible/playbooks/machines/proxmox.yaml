@@ -1,0 +1,5 @@
+- hosts: proxmox
+  roles:
+    - role: prometheus.prometheus.node_exporter
+      become: yes
+      tags: [ node_exporter ]

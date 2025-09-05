@@ -1,0 +1,13 @@
+- hosts: backup-server
+  gather_facts: no
+  vars:
+    ssh_public_keys:
+      - { comment: "admin@rpi-storage-node", public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDVAq/8KY4sqCgWsypM+wrrqp7h7Tnk/BXlljHsWP95+OW9V41WzZyhZJT8f7k5pHgbXJ9WaKTWGkhUFUY8+jkS380ripk/H5UQLRbCLw2yWsycW5X8rxt0YQLLHQ86G6EyvY0ygUDu1OkEW0ObOGyTDSn17jVh7lXVXzIT1hC3K8dyL2YplvkuP8VALpVcN/Ob8EX+QrXthTxHtmj6OoD6EgYmuA/GnJkJbGzFa/t0J2dWqQTE5gFSiTw244+9rvEYW2wke5MZ8gRd2nHpZN7VS7DRLylx4X46Cu86GKHBsSark7O6NheH9ITEOw/QyfNVcvCFt9ecNQ4dTK2ju9mGALoDtMR9NevngIlh2BN7m77+AnpgeK6A+Z+nTud6HERqt2S5PSkOiksPaeNWWpRfYLu+kNoqwVjfC6PH0cbxW0+x2Jt6vWOURLSKASi7q268QujLHbsGGjWKlYfLg9tFpl57s2YDaf8o94CTQrlA9sxl05PQxxRpacgxoN7MltE=" }
+  tasks:
+    - name: Add ssh public key
+      ansible.posix.authorized_key:
+        user: admin
+        state: present
+        comment: "{{ item.comment }}"
+        key: "{{ item.public_key }}"
+      with_items: "{{ ssh_public_keys }}"

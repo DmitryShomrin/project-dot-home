@@ -1,0 +1,10 @@
+- hosts: storage-node
+  roles:
+    - role: docker-compose-traefik
+      tags: [ traefik ]
+    - role: docker-compose-prometheus-stack
+      tags: [ monitoring ]
+    - role: docker-compose-vaultwarden
+      tags: [ vaultwarden ]
+    # - role: docker-compose-postgresus
+    #   tags: [ postgresus ]

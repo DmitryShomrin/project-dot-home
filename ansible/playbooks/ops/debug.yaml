@@ -1,0 +1,32 @@
+- hosts: rpi4-0
+  vars:
+    test: main
+  tasks:
+    - name: Print debug msg
+      debug:
+        msg: "Test variable: {{ ansible_env.HOME }}"
+
+- hosts: storage-node
+  vars:
+    test: main
+  tasks:
+    - name: Print debug msg
+      debug:
+        msg: "Test variable: {{ hostvars['node2'].ansible_nodename }}"
+
+- hosts: all
+  vars:
+    test: main
+  tasks:
+    - name: Print debug msg
+      debug:
+        msg: "Test variable: {{ ansible_hostname }}"
+    - name: Get user info
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ ansible_user }}"
+    - name: Print debug msg
+      debug:
+        msg: "Test variable: {{ getent_passwd[ansible_user].1 }}"
+
+

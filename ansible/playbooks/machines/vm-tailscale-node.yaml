@@ -1,0 +1,64 @@
+- hosts: tailscale-node
+  pre_tasks:
+    - ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+      become: true
+    - ansible.posix.sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: '1'
+        sysctl_set: true
+      become: true
+  roles:
+    - role: prometheus.prometheus.node_exporter
+      become: yes
+      tags: [ node_exporter ]
+    - role: artis3n.tailscale.machine
+      vars:
+        tailscale_tags: ['home-server']
+        tailscale_args: "--advertise-exit-node --advertise-routes=192.168.1.0/24 --hostname=se-home-node"
+        tailscale_authkey: !vault |
+                  $ANSIBLE_VAULT;1.1;AES256
+                  63636265346636323464343935613630373634376238623234653365303261663731376561376263
+                  3533663261316532303535333136363133623466363166350a663865613436353530636365306465
+                  33353864646164326630353430656665653330643861623363363037363037643938643864396561
+                  6339613562326666300a313237616339383331376131373231643030336364373431653664623165
+                  63636330623434336236333034363065323964613962623631666162653530376562623038303133
+                  36636662633966393366393633643634663834346565666333373063626235656530613264316162
+                  643064626132313134306337356263346531
+      tags: [ tailscale ]
+  # post_tasks:
+  #   - block:
+  #     - name: Allow everything and enable UFW
+  #       community.general.ufw:
+  #         state: enabled
+  #     - name: Allow ssh traffic to 192.168.1.0/24
+  #       community.general.ufw:
+  #         rule: allow
+  #         # route: true
+  #         proto: tcp
+  #         src: any
+  #         port: '22'
+  #         # insert: 1
+  #         dest: 192.168.1.0/24
+  #     - name: Allow forwarded/routed traffic to 192.168.1.254/24
+  #       community.general.ufw:
+  #         rule: allow
+  #         # route: true
+  #         # proto: any
+  #         interface_out: eth0
+  #         src: any
+  #         # port: any
+  #         # insert: 1
+  #         dest: 192.168.1.254/32
+  #     - name: Default rule - deny forwarded/routed traffic to subnet 192.168.1.0/24
+  #       community.general.ufw:
+  #         rule: deny
+  #         route: true
+  #         interface_out: eth0
+  #         # direction: outgoing
+  #         src: any
+  #         dest: 192.168.1.0/24
+  #         insert_relative_to: last-ipv4
+  #     become: true

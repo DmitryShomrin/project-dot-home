@@ -1,0 +1,35 @@
+- hosts: rpi-4-0
+  pre_tasks:
+    - name: Install packages
+      apt:
+        name: [ dnsutils, hdparm ]
+        state: present
+        update_cache: true
+      become: true
+      tags: [ packages ]
+  # Mount nfs volume task
+    # - name: Mount NFS volume
+    #   ansible.posix.mount:
+    #     src: "{{ hostvars['node2'].ansible_host }}:/opt/nfs-server/volume/"
+    #     path: /mnt/nfs/volume/
+    #     opts: rw,sync,hard
+    #     state: mounted
+    #     fstype: nfs
+    #   become: true
+    #   tags: [ nfs-mount ]
+  roles:
+    - role: rpi-base-config
+      become: yes
+      tags: [ base-config ]
+    - role: geerlingguy.docker
+      become: yes
+      tags: [ docker ]
+    - role: prometheus.prometheus.node_exporter
+      become: yes
+      tags: [ node_exporter ]
+    - role: docker-compose-traefik
+      tags: [ traefik ]
+    - role: docker-compose-pihole
+      tags: [ pihole ]
+    - role: docker-compose-homepage
+      tags: [ homepage ]

@@ -1,0 +1,13 @@
+- hosts: backup-server
+  pre_tasks:
+    - name: Install packages
+      apt:
+        name: [ smartmontools ]
+        state: present
+        update_cache: true
+      become: true
+      tags: [ packages ]
+  roles:
+    - role: prometheus.prometheus.node_exporter
+      become: yes
+      tags: [ node_exporter ]

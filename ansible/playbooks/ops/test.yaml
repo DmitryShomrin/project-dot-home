@@ -1,0 +1,10 @@
+- hosts: all
+  # roles:
+    # - role: geerlingguy.docker
+    #   become: yes
+    # - role: docker-compose-traefik
+    # - role: docker-compose-pihole
+  tasks:
+    - debug: var=inventory_hostname
+    - debug: var=ansible_hostname
+    # - debug: var=hostvars

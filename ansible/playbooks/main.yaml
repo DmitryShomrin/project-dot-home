@@ -1,0 +1,34 @@
+- hosts: all
+  roles:
+    - role: rpi-base-config
+      become: yes
+      tags: [ base-config ]
+    - role: geerlingguy.docker
+      become: yes
+      tags: [ docker ]
+    - role: prometheus.prometheus.node_exporter
+      become: yes
+      tags: [ node_exporter ]
+    - role: docker-compose-templates
+      become: yes
+      tags: [ templates, monitoring, pi-hole ]
+
+- hosts: storage-node
+  gather_facts: no
+  tasks:
+    - name: Install packages
+      apt:
+        name: [ stress-ng, hdparm, nvme-cli, smartmontools, dnsutils, mdadm ]
+        state: present
+        update_cache: true
+      become: true
+      tags: [ packages ]
+  roles:
+    - role: prometheus.prometheus.smartctl_exporter
+      become: yes
+      vars:
+        smartctl_exporter_system_user: "root"
+      tags: [ smartctl_exporter ]
+    - role: geerlingguy.nfs
+      become: yes
+      tags: [ nfs-server ]
