@@ -1,0 +1,87 @@
+#!/bin/bash
+
+set -u
+
+# Usage:
+# ./rsync-backup.sh /mnt/raid1/paperless admin 192.168.1.249 /mnt/storage/backups
+
+# Source server
+source_path=$1 # /mnt/raid1/paperless
+# Backup server
+rsync_backup_user=$2
+rsync_backup_host=$3
+destination_path=$4
+exclude="${5:-""}" # "thumbnails/"
+
+service=$(basename "$source_path")
+
+start_time=$(date +%T)
+notification_msg="---\\nSource: $source_path\\nDestination: $rsync_backup_host:$destination_path/$service\\nStart time: $start_time"
+
+# backup
+backup() {
+    log_info "Start backup $source_path"
+    log_info "Destination: $rsync_backup_host"
+    log_info "Destination path: $destination_path/$service"
+    if [ -z "$exclude" ] ; then
+        rsync -avh --stats --log-file=$source_path/rsync-logs/rsync-$(date +%F).log $source_path $rsync_backup_user@$rsync_backup_host:$destination_path
+        rsync_result=$?
+        end_time=$(date +%T)
+    else
+        log_info "Exclude: $exclude"
+        rsync -avh --stats --log-file=$source_path/rsync-logs/rsync-$(date +%F).log --exclude="$exclude" $source_path $rsync_backup_user@$rsync_backup_host:$destination_path
+        rsync_result=$?
+        end_time=$(date +%T)
+    fi
+    log_info "rsync exit code: $rsync_result"
+    if [ $rsync_result -eq 0 ] ; then
+        log_info "Backup completed"
+        notification_msg_backup_result="✅ Backup completed\\n"
+        notification_msg="$notification_msg_backup_result$notification_msg\\nEnd time: $end_time"
+        notification
+    else
+        log_info "Backup failed"
+        notification_msg_backup_result="❌ Backup failed\\n"
+        notification_msg="$notification_msg_backup_result$notification_msg\\nEnd time: $end_time"
+        notification
+    fi
+}
+
+check_requirements() {
+    if command -v rsync >/dev/null 2>&1; then
+        log_info "Requirements: rsync ok"
+    else
+        log_error "Requirements: rsync required"
+    fi
+    if command -v curl >/dev/null 2>&1; then
+        log_info "Requirements: curl ok"
+    else
+        log_error "Requirements: curl required"
+    fi
+}
+
+log_info() { echo "[INFO] $*"; }
+
+log_error() { echo "[ERROR] $*" >&2; exit 1; }
+
+notification() {
+    curl -X POST -s -o /dev/null \
+        -H 'Content-Type: application/json' \
+        -d "{\"chat_id\": \"{{ rsync_backup_notification_telegram_chat_id }}\", \"text\": \"$notification_msg\", \"disable_notification\": true}" \
+        https://api.telegram.org/bot{{ rsync_backup_notification_telegram_bot_token }}/sendMessage
+}
+
+rotate_log_files() {
+    if [ $(ls -1q $source_path/rsync-logs/rsync-*.log | wc -l) -gt 10 ] ; then
+        log_info "Rotating rsync log files"
+        log_files=$(ls $source_path/rsync-logs/rsync-*.log | head -n 2)
+        log_info "Deleting log files: $log_files"
+        rm -f $log_files
+    else
+        log_info "Skipping rsync log files rotation"
+    fi
+}
+
+check_requirements
+backup
+rotate_log_files

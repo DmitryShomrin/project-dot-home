@@ -1,0 +1,35 @@
+---
+- name: Create scripts directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/scripts"
+    state: directory
+    mode: '0755'
+
+- name: Template rsync script
+  ansible.builtin.template:
+    src: templates/rsync-backup-template.sh.j2
+    dest: "{{ ansible_env.HOME }}/scripts/rsync-backup.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Create rsync log directory
+  ansible.builtin.file:
+    path: "{{ item.rsync_backup_source }}/rsync-logs"
+    state: directory
+    mode: '0755'
+  with_items: "{{ rsync_backup_jobs }}"
+  when: rsync_backup_jobs != ""
+
+- name: Create rsync backup cron tasks
+  ansible.builtin.cron:
+    name: "backup {{ item.rsync_backup_source }}"
+    job: "{{ ansible_env.HOME }}/scripts/rsync-backup.sh {{ item.rsync_backup_source }} {{ item.rsync_backup_user }} {{ item.rsync_backup_host }} {{ item.rsync_backup_destination }} {{ item.rsync_backup_exclude | default('') }}"
+    state: "{{ item.rsync_backup_cron_state | default('present') }}"
+    minute: "{{ item.rsync_backup_minute | default('*') }}"
+    hour: "{{ item.rsync_backup_hour | default('*') }}"
+    day: "{{ item.rsync_backup_day | default('*') }}"
+    month: "{{ item.rsync_backup_month | default('*') }}"
+    weekday: "{{ item.rsync_backup_weekday | default('*') }}"
+  with_items: "{{ rsync_backup_jobs }}"
+  when: rsync_backup_jobs != ""

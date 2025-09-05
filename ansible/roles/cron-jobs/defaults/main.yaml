@@ -1,0 +1,19 @@
+---
+# rsync_backup_path: "/mnt/storage/backups/"
+rsync_backup_notification_telegram_bot_token: ""
+rsync_backup_notification_telegram_chat_id: ""
+
+rsync_backup_jobs: ""
+  # - {
+  #     rsync_backup_source: "/mnt/raid1/paperless",
+  #     rsync_backup_user: "admin",
+  #     rsync_backup_host: "192.168.1.249",
+  #     rsync_backup_destination: "/mnt/storage/backups/{{ inventory_hostname }}",
+  #     rsync_backup_exclude: "",
+  #     rsync_backup_cron_state: "",
+  #     rsync_backup_minute: "41",
+  #     rsync_backup_hour: "*",
+  #     rsync_backup_day: "*",
+  #     rsync_backup_month: "*",
+  #     rsync_backup_weekday: "*"
+  #   }
