@@ -1,0 +1,17 @@
+---
+roles:
+  - name: geerlingguy.docker
+    version: "7.1.0"
+  - name: geerlingguy.nfs
+    src: https://github.com/geerlingguy/ansible-role-nfs
+    version: master
+
+collections:
+  - name: prometheus.prometheus
+    version: 0.26.2
+  - name: community.general
+    version: 10.3.0
+  - name: ansible.posix
+    version: 1.6.2
+  - name: artis3n.tailscale
+    version: 1.0.1

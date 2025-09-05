@@ -1,0 +1,38 @@
+all:
+  hosts:
+    # list of all hosts
+    # rpi-4-0
+    # rpi-5-0:
+    # proxmox-0
+    # vm-XXX
+    # Changing the host name in inventory changes inventory_hostname and may affect backup path.
+    rpi-4-0:
+      ansible_host: 192.168.1.254
+    rpi-5-0:
+      ansible_host: 192.168.1.253
+    proxmox-0:
+      ansible_host: 192.168.1.250
+      ansible_user: root
+    vm-backup-server: # proxmox vm 101
+      ansible_host: 192.168.1.249
+    vm-tailscale-node: # proxmox vm 102
+      ansible_host: 192.168.1.252
+  children:
+    # groups of hosts
+    # Since the hosts are not equal, there might be situation where one group contains a single host.
+    # It simplifies management specific vars via group_vars. And also it's more scalable than host_vars.
+    rpi-4-0:
+      hosts:
+        rpi-4-0:
+    storage-node:
+      hosts:
+        rpi-5-0:
+    proxmox:
+      hosts:
+        proxmox-0:
+    backup-server:
+      hosts:
+        vm-backup-server:
+    tailscale-node:
+      hosts:
+        vm-tailscale-node:
