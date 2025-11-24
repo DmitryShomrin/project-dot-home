@@ -22,7 +22,7 @@ docker_compose_traefik_labels:
 
 # Monitoring
 # grafana
-docker_compose_prometheus_grafana_image_version: 11.6.5
+docker_compose_prometheus_grafana_image_version: 11.6.7
 docker_compose_prometheus_grafana_admin_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           63313630353062333837353561303764316265623131613461336439383466636239666639313232
@@ -39,7 +39,7 @@ docker_compose_prometheus_grafana_labels:
   - "traefik.http.services.grafana.loadbalancer.server.port=3000"
   - "traefik.docker.network=services"
 # prometheus
-docker_compose_prometheus_image_version: v3.5.0
+docker_compose_prometheus_image_version: v3.7.3
 docker_compose_prometheus_scrape_config_node_exporter_targets: "[192.168.1.254:9100, 192.168.1.253:9100, 192.168.1.252:9100, 192.168.1.250:9100, 192.168.1.249:9100]"
 docker_compose_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
 docker_compose_prometheus_labels:
@@ -136,7 +136,7 @@ docker_compose_vaultwarden_labels:
 
 # Immich
 docker_compose_templates_immich: true
-docker_compose_templates_immich_version: v1.138.0
+docker_compose_templates_immich_version: v2.2.3
 docker_compose_templates_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64623838326333643537373963386266306230623231636130396630316132646538383533383435
@@ -166,10 +166,10 @@ docker_compose_templates_minio_root_password: !vault |
 # paperless-ngx
 
 docker_compose_templates_paperless: true
-docker_compose_templates_paperless_image_version: 2.14.7
-docker_compose_templates_paperless_broker_image: docker.io/library/redis:7
-docker_compose_templates_paperless_gotenberg_image_version: 8.17.3
-docker_compose_templates_paperless_tika_image_version: 3.1.0.0
+docker_compose_templates_paperless_image_version: 2.18.4
+docker_compose_templates_paperless_broker_image: docker.io/library/redis:8
+docker_compose_templates_paperless_gotenberg_image_version: 8.23
+docker_compose_templates_paperless_tika_image_version: 3.2.3.0
 docker_compose_templates_paperless_admin_user: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66376662383165376333313561373161663530626666326465653530663638646439306231373761
