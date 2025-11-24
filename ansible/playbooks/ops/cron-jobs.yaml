@@ -3,15 +3,15 @@
     - role: cron-jobs
       vars:
         rsync_backup_jobs:
-        # Paperless 0 22 5 * *
+        # Paperless 15 23 5 * *
           - {
               rsync_backup_source: "/mnt/raid1/paperless",
               rsync_backup_user: "admin",
               rsync_backup_host: "192.168.1.249",
               rsync_backup_destination: "/mnt/storage/backups/{{ inventory_hostname }}",
               rsync_backup_cron_state: "present",
-              rsync_backup_minute: "0",
-              rsync_backup_hour: "22",
+              rsync_backup_minute: "15",
+              rsync_backup_hour: "23",
               rsync_backup_day: "5"
             }
         # Immich 50 23 5 * *
@@ -25,25 +25,25 @@
               rsync_backup_hour: "23",
               rsync_backup_day: "5"
             }
-        # Vaultwarden 45 22 5 * *
+        # Vaultwarden 25 23 5 * *
           - {
               rsync_backup_source: "/mnt/raid1/vaultwarden",
               rsync_backup_user: "admin",
               rsync_backup_host: "192.168.1.249",
               rsync_backup_destination: "/mnt/storage/backups/{{ inventory_hostname }}",
               rsync_backup_cron_state: "present",
-              rsync_backup_minute: "45",
-              rsync_backup_hour: "22",
+              rsync_backup_minute: "25",
+              rsync_backup_hour: "23",
               rsync_backup_day: "5"
             }
-        # Minio 0 23 5 * *
+        # Minio 30 23 5 * *
           - {
               rsync_backup_source: "/opt/minio",
               rsync_backup_user: "admin",
               rsync_backup_host: "192.168.1.249",
               rsync_backup_destination: "/mnt/storage/backups/{{ inventory_hostname }}",
               rsync_backup_cron_state: "present",
-              rsync_backup_minute: "0",
+              rsync_backup_minute: "30",
               rsync_backup_hour: "23",
               rsync_backup_day: "5"
             }
