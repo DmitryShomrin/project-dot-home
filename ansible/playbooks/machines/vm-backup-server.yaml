@@ -1,13 +1,90 @@
 - hosts: backup-server
+  become: true
+  
   pre_tasks:
     - name: Install packages
       apt:
         name: [ smartmontools ]
         state: present
         update_cache: true
-      become: true
       tags: [ packages ]
+    
+  tasks:
+    # Samba users
+    - name: Create Samba group
+      ansible.builtin.group:
+        name: samba-users
+        state: present
+        system: true
+    - name: Create Samba users
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: samba-users
+        append: true
+        system: true
+      loop:
+        - dmitry
+        - guest
+    
+    # Samba role
+    - name: Include Samba Server role
+      ansible.builtin.include_role:
+        name: vladgh.samba.server
+      vars:
+        samba_netbios_name: HOME-NAS
+        samba_server_string: Home Samba file server
+        samba_shares_root: /mnt/storage/samba
+        samba_workgroup: WORKGROUP
+        samba_global_config_extras: |
+          server role = standalone
+          smb encrypt = required
+          server signing = required
+          server min protocol = SMB3_11
+          client min protocol = SMB3_11
+          server smb3 encryption algorithms = AES-256-GCM
+          deadtime = 60
+          use sendfile = yes
+        samba_users:
+          - name: dmitry
+            password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              66653936616265616336376233373761306235303364376635313837333332653732326231653939
+              6231323334383535396330643039386638323131393233610a393430346265656535626239343965
+              30326130353933393335326162393338393936333236666232316565336637323831626163336333
+              6233666566303035360a613863323764663863336331343538316266333761653337336264616131
+              6431
+          - name: guest
+            password: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              39346530653335366637366132363065633336303734333263643039643431383536346638666531
+              3365363336336537396133646234636638646239353234650a653238646634373164343539363739
+              39353435613030613830643930353933656637616539313739643835633635366336343133613938
+              3131316361616138650a383434653237363565653631363366363739613539636362333734616162
+              6565
+        samba_shares:
+          - name: dmitry
+            comment: 'Dmitry share'
+            group: samba-users
+            write_list: dmitry
+    
+    # Install & configure wsdd-server (Samba discovery for Windows)
+    - name: Create wssd configuration
+      ansible.builtin.lineinfile:
+        path: /etc/default/wsdd
+        regexp: '^WSDD_PARAMS=*'
+        line: WSDD_PARAMS="--ipv4only -n HOME-NAS --interface {{ ansible_facts['default_ipv4']['address'] }}"
+        create: yes
+      register: wsdd_configuration
+    - name: Install wsdd
+      ansible.builtin.package:
+        name: wsdd-server
+        state: present
+    - name: Restart wsdd-server
+      ansible.builtin.service:
+        name: wsdd-server
+        state: restarted
+      when: wsdd_configuration.changed
+  
   roles:
     - role: prometheus.prometheus.node_exporter
-      become: yes
       tags: [ node_exporter ]

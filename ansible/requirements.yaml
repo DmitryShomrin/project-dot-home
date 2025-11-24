@@ -15,3 +15,5 @@ collections:
     version: 1.6.2
   - name: artis3n.tailscale
     version: 1.0.1
+  - name: vladgh.samba
+    version: 3.5.4
