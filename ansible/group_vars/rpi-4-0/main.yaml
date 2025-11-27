@@ -7,8 +7,8 @@ docker_daemon_options:
 
 docker_compose_templates_start: true
 # pi-hole
-docker_compose_pihole_image_version: 2025.08.0
-docker_compose_pihole_cloudflared_image_version: 2025.8.0
+docker_compose_pihole_image_version: 2025.11.0
+docker_compose_pihole_cloudflared_image_version: 2025.11.1
 docker_compose_pihole_web_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           63313630353062333837353561303764316265623131613461336439383466636239666639313232
@@ -28,6 +28,7 @@ docker_compose_pihole_labels:
 docker_compose_pihole_dns_local_names:
   - "192.168.1.254 rpi4-0.home"
   - "192.168.1.253 rpi-storage-node.home"
+  - "192.168.1.248 cicd-server.home"
   - "192.168.1.245 test-vm-0.home"
 docker_compose_pihole_dns_custom_cnames:
   - "start.s5n.dev,rpi4-0.home"
@@ -42,6 +43,8 @@ docker_compose_pihole_dns_custom_cnames:
   - "prometheus.s5n.dev,rpi-storage-node.home"
   - "grafana.s5n.dev,rpi-storage-node.home"
   - "traefik-rpi-storage-node.s5n.dev,rpi-storage-node.home"
+  - "gitlab.s5n.dev,cicd-server.home"
+  - "gitlab-registry.s5n.dev,cicd-server.home"
   - "traefik-test-0.s5n.dev,test-vm-0.home"
   - "pihole-v6-test-0.s5n.dev,test-vm-0.home"
 

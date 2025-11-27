@@ -1,0 +1,18 @@
+---
+docker_compose_services_directory: "{{ ansible_env.HOME }}/docker-compose-files"
+docker_compose_services_config_directory: "{{ ansible_env.HOME }}/configs"
+docker_compose_services_domain: "s5n.dev"
+docker_compose_networks:
+  - proxy
+  - services
+
+docker_compose_gitlab_stack_start: true
+
+# gitlab
+
+docker_compose_gitlab_image_version: latest
+docker_compose_gitlab_dir: "/opt/gitlab"
+docker_compose_gitlab_domain: "gitlab-test.{{ docker_compose_services_domain }}"
+docker_compose_gitlab_registry_domain: "gitlab-registry-test.{{ docker_compose_services_domain }}"
+docker_compose_gitlab_root_password:
+docker_compose_gitlab_labels: []

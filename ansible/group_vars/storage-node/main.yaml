@@ -40,7 +40,7 @@ docker_compose_prometheus_grafana_labels:
   - "traefik.docker.network=services"
 # prometheus
 docker_compose_prometheus_image_version: v3.7.3
-docker_compose_prometheus_scrape_config_node_exporter_targets: "[192.168.1.254:9100, 192.168.1.253:9100, 192.168.1.252:9100, 192.168.1.250:9100, 192.168.1.249:9100]"
+docker_compose_prometheus_scrape_config_node_exporter_targets: "[192.168.1.254:9100, 192.168.1.253:9100, 192.168.1.252:9100, 192.168.1.250:9100, 192.168.1.249:9100, 192.168.1.248:9100]"
 docker_compose_prometheus_scrape_config_smartctl_exporter_targets: ['192.168.1.253:9633']
 docker_compose_prometheus_labels:
   - "traefik.enable=true"

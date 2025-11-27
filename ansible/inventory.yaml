@@ -17,6 +17,9 @@ all:
       ansible_host: 192.168.1.249
     vm-tailscale-node: # proxmox vm 102
       ansible_host: 192.168.1.252
+    vm-cicd-server: # proxmox vm 103
+      ansible_host: 192.168.1.248
+      ansible_port: 22
   children:
     # groups of hosts
     # Since the hosts are not equal, there might be situation where one group contains a single host.
