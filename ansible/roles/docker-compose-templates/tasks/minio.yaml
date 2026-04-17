@@ -7,6 +7,11 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
 - name: Define Minio docker compose file name
   set_fact:
     docker_compose_templates_minio_file_name: "minio.yaml"

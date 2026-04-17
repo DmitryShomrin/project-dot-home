@@ -1,6 +1,9 @@
 - hosts: vm-cicd-server
   gather_facts: no
   vars:
+    # Docker configuration
+    docker_daemon_options:
+      log-driver: local
     # Update the actual ssh port in inventory and then define new ssh port
     docker_compose_gitlab_ssh_port: 2222
     docker_compose_gitlab_image_version: 18.6.0-ce.0
