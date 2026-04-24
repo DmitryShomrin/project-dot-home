@@ -5,7 +5,7 @@ Packer templates for building VM images on Proxmox. These templates produce reus
 ## How it fits into the stack
 
 ```
-images/ (Packer)  →  terraform/ (Terraform)  →  ansible/ (Ansible)
+images/ (Packer)  →  infrastructure/ (Terraform)  →  ansible/ (Ansible)
 Build VM template     Clone & provision VM        Configure & deploy services
 ```
 
