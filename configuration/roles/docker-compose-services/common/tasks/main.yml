@@ -1,0 +1,17 @@
+---
+
+- name: Ensure Docker networks exist
+  ansible.builtin.shell: docker network create --driver bridge {{ item }} || true
+  loop: "{{ docker_compose_networks }}"
+
+- name: Create docker compose directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_services_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Create services config directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_services_config_directory }}"
+    state: directory
+    mode: '0755'

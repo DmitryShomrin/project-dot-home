@@ -1,14 +1,5 @@
 ---
 
-- name: Create directories
-  include_tasks: create-init-directories.yaml
-  when: docker_compose_services_directories_created is undefined or not docker_compose_services_directories_created
-
-- name: Create docker networks
-  include_tasks: create-docker-networks.yaml
-  loop: "{{ docker_compose_networks }}"
-  when: docker_network_created is undefined or not docker_network_created
-
 - name: Create pihole data directory
   ansible.builtin.file:
     path: "{{ docker_compose_pihole_data_dir }}"
@@ -17,10 +8,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   become: yes
-
-- name: Set pihole docker compose file name
-  set_fact:
-    docker_compose_pihole_file_name: "pihole.yaml"
 
 - name: Template a pi-hole docker-compose file
   ansible.builtin.template:
@@ -51,7 +38,7 @@
   delegate_to: 127.0.0.1
   until: _result.status == 200
   retries: 24 # 2 mins
-  delay: 5 
+  delay: 5
 
 - name: API
   include_tasks: api.yaml

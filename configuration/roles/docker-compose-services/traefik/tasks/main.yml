@@ -1,14 +1,5 @@
 ---
 
-- name: Create directories
-  include_tasks: create-init-directories.yaml
-  when: docker_compose_services_directories_created is undefined or not docker_compose_services_directories_created
-
-- name: Create docker networks
-  include_tasks: create-docker-networks.yaml
-  loop: "{{ docker_compose_networks }}"
-  when: docker_network_created is undefined or not docker_network_created
-
 - name: Create traefik config directory
   ansible.builtin.file:
     path: "{{ docker_compose_traefik_config_dir }}"
@@ -17,11 +8,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
-- name: Check traefik certificate file
-  ansible.builtin.stat:
-    path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
-  register: traefik_certificate_file_result
-
 - name: Create traefik certificate file
   ansible.builtin.file:
     path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
@@ -29,7 +15,8 @@
     mode: '0600'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  when: not traefik_certificate_file_result.stat.exists
+  args:
+    creates: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
 
 - name: Template Traefik config file
   ansible.builtin.template:
@@ -37,12 +24,7 @@
     dest: "{{ docker_compose_traefik_config_dir }}/traefik.yml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  register: traefik_template_config_task
   notify: Start/Restart Traefik
-
-- name: Set Traefik docker compose file name
-  set_fact:
-    docker_compose_traefik_file_name: "traefik.yaml"
 
 - name: Template Traefik docker-compose file
   ansible.builtin.template:

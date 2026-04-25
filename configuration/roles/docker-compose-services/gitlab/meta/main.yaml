@@ -1,5 +1,6 @@
 ---
-dependencies: []
+dependencies:
+  - role: docker-compose-services/common
 galaxy_info:
   author: DmitryShomrin
   description: Template Gitlab docker compose file and configuration

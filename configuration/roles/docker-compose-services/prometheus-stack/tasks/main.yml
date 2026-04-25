@@ -1,14 +1,5 @@
 ---
 
-- name: Create directories
-  include_tasks: create-init-directories.yaml
-  when: docker_compose_services_directories_created is undefined or not docker_compose_services_directories_created
-
-- name: Create docker networks
-  include_tasks: create-docker-networks.yaml
-  loop: "{{ docker_compose_networks }}"
-  when: docker_network_created is undefined or not docker_network_created
-
 - name: Monitoring directories
   block:
     - name: Create prometheus data directory
@@ -18,7 +9,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create prometheus config directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_config_dir }}"
@@ -26,7 +17,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create prometheus alert rules directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_config_dir }}/rules"
@@ -34,7 +25,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create grafana data directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_grafana_data_dir }}"
@@ -42,7 +33,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create grafana provisioning directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_grafana_config_dir }}"
@@ -50,7 +41,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create grafana datasources directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_grafana_config_dir }}/datasources"
@@ -66,7 +57,7 @@
         mode: '0755'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-    
+
     - name: Create alertmanager config directory
       ansible.builtin.file:
         path: "{{ docker_compose_prometheus_alertmanager_config_dir }}"
@@ -75,10 +66,6 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
       when: docker_compose_prometheus_alertmanager
-
-- name: Set monitoring docker compose file name
-  set_fact:
-    docker_compose_prometheus_monitoring_file_name: "monitoring.yaml"
 
 - name: Template monitoring docker-compose file
   ansible.builtin.template:
