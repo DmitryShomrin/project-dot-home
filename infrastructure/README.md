@@ -5,7 +5,7 @@ Terraform code for provisioning VMs on Proxmox. Each VM is an independent Terraf
 ## How it fits into the stack
 
 ```
-images/ (Packer)  →  infrastructure/ (Terraform)  →  ansible/ (Ansible)
+images/ (Packer)  →  infrastructure/ (Terraform)  →  configuration/ (Ansible)
 Build VM template     Clone & provision VM            Configure & deploy services
 ```
 

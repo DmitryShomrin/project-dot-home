@@ -1,0 +1,8 @@
+- hosts: storage-node
+  roles:
+    - role: traefik
+      tags: [ traefik ]
+    - role: prometheus-stack
+      tags: [ monitoring ]
+    - role: vaultwarden
+      tags: [ vaultwarden ]

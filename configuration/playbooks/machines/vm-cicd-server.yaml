@@ -134,7 +134,7 @@
     - role: geerlingguy.docker
       become: yes
       tags: [ docker ]
-    - role: docker-compose-traefik
+    - role: traefik
       tags: [ traefik ]
-    - role: docker-compose-gitlab
+    - role: gitlab
       tags: [ gitlab ]

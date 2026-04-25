@@ -27,9 +27,9 @@
     - role: prometheus.prometheus.node_exporter
       become: yes
       tags: [ node_exporter ]
-    - role: docker-compose-traefik
+    - role: traefik
       tags: [ traefik ]
-    - role: docker-compose-pihole
+    - role: pihole
       tags: [ pihole ]
-    - role: docker-compose-homepage
+    - role: homepage
       tags: [ homepage ]

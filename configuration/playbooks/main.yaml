@@ -9,7 +9,7 @@
     - role: prometheus.prometheus.node_exporter
       become: yes
       tags: [ node_exporter ]
-    - role: docker-compose-templates
+    - role: templates
       become: yes
       tags: [ templates, monitoring, pi-hole ]
 
