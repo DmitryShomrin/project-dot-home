@@ -91,19 +91,6 @@ docker_compose_templates_postgresql_password: !vault |
           6133653236373862620a366165343661386163353366346366633336343437653231303131393332
           3137
 
-# Postgresus
-docker_compose_postgresus_start: false
-docker_compose_postgresus_image_version: latest
-docker_compose_postgresus_data_dir: "/opt/postgresus"
-docker_compose_postgresus_labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.postgresus.rule=Host(`postgresus-{{ ansible_hostname }}.{{ docker_compose_services_domain }}`)"
-  - "traefik.http.routers.postgresus.entrypoints=https"
-  - "traefik.http.routers.postgresus.tls=true"
-  - "traefik.http.routers.postgresus.tls.certresolver=cloudflare"
-  - "traefik.http.services.postgresus.loadbalancer.server.port=4005"
-  - "traefik.docker.network=services"
-
 # Vaultwarden
 docker_compose_vaultwarden_start: true
 docker_compose_vaultwarden_image_version: 1.34.3
@@ -135,15 +122,26 @@ docker_compose_vaultwarden_labels:
   - "traefik.docker.network=services"
 
 # Immich
-docker_compose_templates_immich: true
-docker_compose_templates_immich_version: v2.7.5
-docker_compose_templates_immich_database_password: !vault |
+docker_compose_immich_start: true
+docker_compose_immich_version: v2.7.5
+docker_compose_immich_redis_image: "docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9"
+docker_compose_immich_database_image: "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
+docker_compose_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64623838326333643537373963386266306230623231636130396630316132646538383533383435
           3837353462643662373365663934396465353165393865660a363239313964363137376330633834
           35366163613061343461346230343633636639393365663932346436306235386638353064636664
           6334366432643465360a633938306263623163623538623931393735353535353366393561646435
           3939
+docker_compose_immich_upload_dir: "/mnt/raid1/immich"
+docker_compose_immich_labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.immich.rule=Host(`immich.{{ docker_compose_services_domain }}`)"
+  - "traefik.http.routers.immich.entrypoints=https"
+  - "traefik.http.routers.immich.tls=true"
+  - "traefik.http.routers.immich.tls.certresolver=cloudflare"
+  - "traefik.http.services.immich.loadbalancer.server.port=2283"
+  - "traefik.docker.network=services"
 
 # Minio
 docker_compose_templates_minio: true

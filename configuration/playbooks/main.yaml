@@ -1,8 +1,5 @@
 - hosts: all
   roles:
-    - role: rpi-base-config
-      become: yes
-      tags: [ base-config ]
     - role: geerlingguy.docker
       become: yes
       tags: [ docker ]
@@ -11,7 +8,7 @@
       tags: [ node_exporter ]
     - role: templates
       become: yes
-      tags: [ templates, monitoring, pi-hole ]
+      tags: [ templates ]
 
 - hosts: storage-node
   gather_facts: no

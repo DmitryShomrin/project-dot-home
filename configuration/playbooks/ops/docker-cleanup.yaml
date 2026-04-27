@@ -1,0 +1,10 @@
+- hosts: "{{ target_hosts | default('all') }}"
+  become: true
+  tasks:
+    - name: Docker cleanup
+      ansible.builtin.command: docker system prune -a -f --filter "until=24h"
+      register: docker_cleanup_result
+
+    - name: Docker cleanup result
+      ansible.builtin.debug:
+        msg: "{{ docker_cleanup_result.stdout_lines }}"

@@ -1,0 +1,13 @@
+---
+docker_compose_immich_start: true
+docker_compose_immich_file_name: "immich.yaml"
+docker_compose_immich_config_file: ".env"
+
+docker_compose_immich_version: release
+docker_compose_immich_redis_image: ""
+docker_compose_immich_database_image: ""
+docker_compose_immich_database_dir: "/opt/postgresql-immich/data"
+docker_compose_immich_database_password: ""
+docker_compose_immich_model_cache_dir: "/opt/immich-model-cache"
+docker_compose_immich_upload_dir: ""
+docker_compose_immich_labels: []

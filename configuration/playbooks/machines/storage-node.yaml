@@ -6,3 +6,9 @@
       tags: [ monitoring ]
     - role: vaultwarden
       tags: [ vaultwarden ]
+    - role: immich
+      tags: [ immich ]
+
+- import_playbook: ../ops/docker-cleanup.yaml                                                                                                             
+  vars:                                                                                                                                                   
+    target_hosts: storage-node
