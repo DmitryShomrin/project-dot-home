@@ -1,0 +1,8 @@
+---
+dependencies:
+  - role: docker-compose-services/common
+galaxy_info:
+  author: DmitryShomrin
+  description: Deploy Minio docker compose stack
+  company: DmitryShomrin
+  galaxy_tags: []

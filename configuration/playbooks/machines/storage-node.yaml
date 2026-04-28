@@ -8,6 +8,8 @@
       tags: [ vaultwarden ]
     - role: immich
       tags: [ immich ]
+    - role: minio
+      tags: [ minio ]
 
 - import_playbook: ../ops/docker-cleanup.yaml                                                                                                             
   vars:                                                                                                                                                   

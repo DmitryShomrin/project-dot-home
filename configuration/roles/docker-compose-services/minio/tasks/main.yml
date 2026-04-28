@@ -1,0 +1,25 @@
+---
+
+- name: Create Minio data directory
+  ansible.builtin.file:
+    path: "{{ docker_compose_minio_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Template Minio docker-compose file
+  ansible.builtin.template:
+    src: templates/minio.yaml.j2
+    dest: "{{ docker_compose_services_directory }}/{{ docker_compose_minio_file_name }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Start/Restart Minio
+
+- name: Flush handlers
+  meta: flush_handlers

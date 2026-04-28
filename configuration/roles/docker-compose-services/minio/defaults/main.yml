@@ -1,0 +1,11 @@
+---
+docker_compose_minio_start: true
+docker_compose_minio_file_name: "minio.yaml"
+
+docker_compose_minio_image_version: latest
+docker_compose_minio_data_dir: "/opt/minio"
+docker_compose_minio_root_user: ""
+docker_compose_minio_root_password: ""
+docker_compose_minio_console_domain: "minio.{{ docker_compose_services_domain }}"
+docker_compose_minio_api_domain: "api-minio.{{ docker_compose_services_domain }}"
+docker_compose_minio_labels: []
