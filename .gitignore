@@ -1,8 +1,8 @@
 .idea
 
-ansible/roles/geerlingguy*
-ansible/ansible-vault
-ansible/collections
+configuration/roles/geerlingguy*
+configuration/ansible-vault
+configuration/collections
 
 credentials*
 
