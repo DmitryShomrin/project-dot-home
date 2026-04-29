@@ -8,6 +8,11 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
+- name: Check traefik certificate file
+  ansible.builtin.stat:
+    path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
+  register: docker_compose_traefik_certificate_file_result
+
 - name: Create traefik certificate file
   ansible.builtin.file:
     path: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
@@ -15,8 +20,7 @@
     mode: '0600'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  args:
-    creates: "{{ docker_compose_traefik_config_dir }}/{{ docker_compose_traefik_certificates_file }}"
+  when: not docker_compose_traefik_certificate_file_result.stat.exists
 
 - name: Template Traefik config file
   ansible.builtin.template:
