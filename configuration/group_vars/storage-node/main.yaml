@@ -81,9 +81,10 @@ docker_compose_prometheus_alertmanager_labels:
 nfs_exports: ["/opt/nfs-server/volume *(rw,sync,no_subtree_check)"]
 
 # Postgresql
-docker_compose_templates_postgresql: true
-docker_compose_templates_postgresql_image_version: 16.4
-docker_compose_templates_postgresql_password: !vault |
+docker_compose_postgresql_start: true
+docker_compose_postgresql_image_version: 16.4
+docker_compose_postgresql_data_dir: "/opt/postgresql/data"
+docker_compose_postgresql_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           37366238396561303831393734626161366232363030303134373837363866636664373632666631
           3138393863353334353235613137653638386433356336360a616339616362613764626666636638

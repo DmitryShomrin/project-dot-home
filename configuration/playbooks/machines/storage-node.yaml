@@ -4,6 +4,8 @@
       tags: [ traefik ]
     - role: prometheus-stack
       tags: [ monitoring ]
+    - role: postgresql
+      tags: [ postgresql ]
     - role: vaultwarden
       tags: [ vaultwarden ]
     - role: immich

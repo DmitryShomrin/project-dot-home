@@ -1,0 +1,7 @@
+---
+
+- name: Start/Restart Postgresql
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ docker_compose_postgresql_file_name }} up -d"
+    chdir: "{{ docker_compose_services_directory }}"
+  when: docker_compose_postgresql_start

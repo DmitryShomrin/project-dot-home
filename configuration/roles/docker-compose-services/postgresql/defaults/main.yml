@@ -1,0 +1,9 @@
+---
+docker_compose_postgresql_start: true
+docker_compose_postgresql_file_name: "postgresql.yaml"
+
+docker_compose_postgresql_image_version: latest
+
+docker_compose_postgresql_data_dir: "/opt/postgresql/data"
+
+docker_compose_postgresql_password: ""
