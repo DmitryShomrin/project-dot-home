@@ -10,6 +10,8 @@
       tags: [ immich ]
     - role: minio
       tags: [ minio ]
+    - role: paperless
+      tags: [ paperless ]
 
 - import_playbook: ../ops/docker-cleanup.yaml                                                                                                             
   vars:                                                                                                                                                   

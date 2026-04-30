@@ -1,0 +1,21 @@
+---
+docker_compose_paperless_start: true
+docker_compose_paperless_file_name: "paperless-ngx.yaml"
+
+docker_compose_paperless_image_version: latest
+docker_compose_paperless_broker_image: "docker.io/library/redis:8"
+docker_compose_paperless_gotenberg_image_version: latest
+docker_compose_paperless_tika_image_version: latest
+
+docker_compose_paperless_domain: "paperless.{{ docker_compose_services_domain }}"
+docker_compose_paperless_data_dir: "/opt/paperless/data"
+docker_compose_paperless_consume_dir: "/opt/paperless/consume"
+docker_compose_paperless_media_dir: ""
+docker_compose_paperless_export_dir: ""
+docker_compose_paperless_redis_data_dir: "/opt/paperless/redis-data"
+
+docker_compose_paperless_database_password: ""
+docker_compose_paperless_admin_user: ""
+docker_compose_paperless_admin_password: ""
+
+docker_compose_paperless_labels: []
