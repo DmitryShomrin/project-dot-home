@@ -94,7 +94,7 @@ docker_compose_postgresql_password: !vault |
 
 # Vaultwarden
 docker_compose_vaultwarden_start: true
-docker_compose_vaultwarden_image_version: 1.34.3
+docker_compose_vaultwarden_image_version: 1.36.0
 docker_compose_vaultwarden_data_dir: "/mnt/raid1/vaultwarden"
 docker_compose_vaultwarden_database_host: postgresql
 docker_compose_vaultwarden_database_user: vaultwarden
@@ -124,8 +124,8 @@ docker_compose_vaultwarden_labels:
 
 # Immich
 docker_compose_immich_start: true
-docker_compose_immich_version: v2.7.5
-docker_compose_immich_redis_image: "docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9"
+docker_compose_immich_version: v3.0.3
+docker_compose_immich_redis_image: "docker.io/valkey/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9"
 docker_compose_immich_database_image: "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
 docker_compose_immich_database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -182,10 +182,10 @@ docker_compose_minio_labels:
 # paperless-ngx
 
 docker_compose_paperless_start: true
-docker_compose_paperless_image_version: 2.18.4
-docker_compose_paperless_broker_image: docker.io/library/redis:8
-docker_compose_paperless_gotenberg_image_version: 8.23
-docker_compose_paperless_tika_image_version: 3.2.3.0
+docker_compose_paperless_image_version: 3.0.0
+docker_compose_paperless_broker_image: docker.io/valkey/valkey:9-alpine
+docker_compose_paperless_gotenberg_image_version: 8.34
+docker_compose_paperless_tika_image_version: 3.3.1.0
 docker_compose_paperless_domain: "paperless.{{ docker_compose_services_domain }}"
 docker_compose_paperless_admin_user: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -208,6 +208,17 @@ docker_compose_paperless_database_password: !vault |
           34303230336530336133633935353835346434373066386630313635623130323837383162666561
           6463353930613337320a373164613137646435646662626139353864313563303630306563353132
           6638
+docker_compose_paperless_secret_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62313332653365316365366234386364386132383665363466356430356330366365663966346563
+          6230643463616564663530616634303566323133333630300a383134386437653166663439356537
+          63363965336132396661366264636464376132303230393032326130643938656430626161363166
+          6431336464633738640a356161366335393461653830613238366638393838643865306561626263
+          30323238343161646638393736373736653661336666623761343231363130393031396430376361
+          64343032383530656366336662396239633937353938313532303661626438613838373537306136
+          64666634346437303338313535613338643465383163656137326631653730396261323237666330
+          36343561643363613933343038353238653062623035353064313131643562653835323262393864
+          6562
 docker_compose_paperless_media_dir: "/mnt/raid1/paperless/media"
 docker_compose_paperless_export_dir: "/mnt/raid1/paperless/export"
 docker_compose_paperless_labels:

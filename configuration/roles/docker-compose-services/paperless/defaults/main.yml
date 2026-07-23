@@ -17,5 +17,6 @@ docker_compose_paperless_redis_data_dir: "/opt/paperless/redis-data"
 docker_compose_paperless_database_password: ""
 docker_compose_paperless_admin_user: ""
 docker_compose_paperless_admin_password: ""
+docker_compose_paperless_secret_key: ""
 
 docker_compose_paperless_labels: []

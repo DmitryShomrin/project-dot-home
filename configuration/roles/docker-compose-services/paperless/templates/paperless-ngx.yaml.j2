@@ -35,6 +35,7 @@ services:
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
       PAPERLESS_ADMIN_USER: {{ docker_compose_paperless_admin_user }}
       PAPERLESS_ADMIN_PASSWORD: {{ docker_compose_paperless_admin_password }}
+      PAPERLESS_SECRET_KEY: {{ docker_compose_paperless_secret_key }}
       PAPERLESS_OCR_LANGUAGE: swe+eng+rus
       PAPERLESS_OCR_LANGUAGES: "swe rus"
       PAPERLESS_TIME_ZONE: Europe/Stockholm
